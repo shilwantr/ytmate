@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Subtitles Downloader - Download SRT, VTT, TXT Captions | YTmate</title>
+  <meta name="description" content="Download YouTube video subtitles and closed captions in SRT, VTT, and plain text formats. Free transcript extractor supporting 50+ auto-translated languages.">
+  <meta name="keywords" content="youtube subtitles downloader, download youtube srt, youtube transcript download, vtt subtitles youtube, free youtube captions downloader">
+  <link rel="canonical" href="https://ytmate.online/youtube-subtitles-downloader.html">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ytmate.online/youtube-subtitles-downloader.html">
+  <meta property="og:title" content="YouTube Subtitles Downloader - SRT, VTT, TXT | YTmate">
+  <meta property="og:description" content="Download YouTube closed captions and transcripts in SRT, VTT, and TXT.">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff1a40'><polygon points='5 3 19 12 5 21 5 3'/></svg>">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "YTmate Subtitles Downloader",
+    "url": "https://ytmate.online/youtube-subtitles-downloader.html",
+    "description": "Download closed captions and transcripts from YouTube videos in SRT, VTT, and TXT.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "All"
+  }
+  </script>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="index.html" class="site-logo">
+        <div class="logo-badge"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+        <span class="logo-text">YT<span>mate</span></span>
+      </a>
+      <nav aria-label="Main Navigation">
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li class="nav-item-dropdown">
+            <a href="javascript:void(0)" class="nav-link active">Tools ▾</a>
+            <ul class="dropdown-menu">
+              <li><a href="youtube-to-mp3.html" class="dropdown-link">🎵 YouTube to MP3 (320k)</a></li>
+              <li><a href="youtube-to-mp4.html" class="dropdown-link">🎬 YouTube to MP4 HD</a></li>
+              <li><a href="youtube-shorts-downloader.html" class="dropdown-link">⚡ Shorts Downloader</a></li>
+              <li><a href="youtube-4k-downloader.html" class="dropdown-link">🖥️ 4K & 8K Downloader</a></li>
+              <li><a href="youtube-1080p-downloader.html" class="dropdown-link">📺 1080p Full HD</a></li>
+              <li><a href="youtube-audio-downloader.html" class="dropdown-link">🎧 Audio Extractor (WAV/M4A)</a></li>
+              <li><a href="youtube-playlist-downloader.html" class="dropdown-link">📂 Playlist Downloader</a></li>
+              <li><a href="youtube-thumbnail-downloader.html" class="dropdown-link">🖼️ Thumbnail Downloader</a></li>
+              <li><a href="youtube-subtitles-downloader.html" class="dropdown-link active">📝 Subtitles (SRT)</a></li>
+            </ul>
+          </li>
+          <li><a href="how-to-download.html" class="nav-link">How to Download</a></li>
+          <li><a href="supported-formats.html" class="nav-link">Formats</a></li>
+          <li><a href="faq.html" class="nav-link">FAQ</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle></svg></button>
+        <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Toggle mobile menu"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="hero-section">
+      <div class="container">
+        <div class="hero-pill">📝 SUBTITLES & TRANSCRIPT EXTRACTOR</div>
+        <h1 class="hero-title">YouTube <span class="gradient-text">Subtitles Downloader</span></h1>
+        <p class="hero-subtitle">Download video subtitles, closed captions, and complete text transcripts in SRT, VTT, and TXT formats. Perfect for students, translators, and researchers.</p>
+
+        <div class="downloader-box">
+          <search>
+            <form id="downloaderForm" class="downloader-form" action="#" method="GET">
+              <div class="input-wrapper">
+                <span class="input-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></span>
+                <label for="videoUrlInput" class="sr-only">Paste YouTube link to extract subtitles</label>
+                <input type="url" id="videoUrlInput" name="url" class="url-input" placeholder="Paste YouTube link to extract subtitles & captions..." required>
+                <div class="input-action-btns">
+                  <button type="button" id="btnClear" class="btn-clear">Clear</button>
+                  <button type="button" id="btnPaste" class="btn-paste">Paste</button>
+                </div>
+              </div>
+              <button type="submit" class="btn-download-action">Extract Captions</button>
+            </form>
+          </search>
+          <div class="quick-samples">
+            <span>Sample:</span>
+            <button type="button" class="sample-pill" data-url="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Pop Song Subtitles</button>
+          </div>
+          <div id="statusMessage" class="status-message" role="alert"></div>
+        </div>
+
+        <!-- Result Container -->
+        <div id="resultContainer" class="result-container">
+          <div class="video-overview">
+            <div class="video-thumb-wrap">
+              <img id="resThumb" class="video-thumb" src="" alt="Thumbnail">
+            </div>
+            <div class="video-info">
+              <h3 id="resTitle">YouTube Captions Track</h3>
+              <div class="video-meta">
+                <span><strong id="resAuthor">Speaker</strong></span>
+                <span>📝 Multi-Language Timed Captions</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="format-tabs">
+            <button class="tab-btn active" data-target="tabSubs">📝 Captions & Subtitles</button>
+          </div>
+
+          <div id="tabSubs" class="tab-content active">
+            <table class="quality-table">
+              <thead><tr><th>Language</th><th>Format</th><th>Type</th><th>Download</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>English (Original CC)</strong></td>
+                  <td>.SRT (SubRip)</td>
+                  <td>Timed Subtitles</td>
+                  <td><button class="btn-table-download" data-format="srt" data-quality="English_Original">Download SRT</button></td>
+                </tr>
+                <tr>
+                  <td><strong>English (Web Timed)</strong></td>
+                  <td>.VTT (WebVTT)</td>
+                  <td>HTML5 Video Captions</td>
+                  <td><button class="btn-table-download" data-format="vtt" data-quality="English_Web">Download VTT</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Plain Text Transcript</strong></td>
+                  <td>.TXT</td>
+                  <td>Raw Text (No Timestamps)</td>
+                  <td><button class="btn-table-download" data-format="txt" data-quality="English_Transcript">Download TXT</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Spanish (Español Auto-Translated)</strong></td>
+                  <td>.SRT</td>
+                  <td>Auto-Translated</td>
+                  <td><button class="btn-table-download" data-format="srt" data-quality="Spanish_SRT">Download SRT</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal Progress Simulation -->
+    <div id="modalOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-card">
+        <h3 id="modalTitle">Fetching Subtitle File</h3>
+        <div class="progress-bar-container"><div id="modalProgressFill" class="progress-bar-fill"></div></div>
+        <p id="modalPercent" style="font-weight: 700; margin-block-end: 0.5rem;">0%</p>
+        <p id="modalDesc" style="color: var(--text-secondary); font-size: 0.9rem;">Extracting timestamped dialogue track...</p>
+      </div>
+    </div>
+
+    <section class="container content-article">
+      <div class="article-header">
+        <h2>SubRip (.SRT) vs WebVTT (.VTT) vs TXT</h2>
+        <div class="article-meta">Accessibility & Translation Guide</div>
+      </div>
+      <div class="prose">
+        <p><strong>.SRT</strong> is the industry standard for media players (VLC, KMPlayer, PotPlayer) and video editing suites (Premiere Pro, DaVinci Resolve). <strong>.VTT</strong> is designed for modern web browsers and `<track>` tags. <strong>.TXT</strong> gives you clean plain text that you can paste into ChatGPT, Notion, or Word for note-taking.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>© 2026 YTmate (ytmate.online). Free YouTube Subtitles Downloader.</p>
+        <p><a href="terms.html">Terms</a> • <a href="privacy.html">Privacy</a> • <a href="disclaimer.html">Disclaimer</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

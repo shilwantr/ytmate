@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Thumbnail Downloader - Grab HD 1080p Cover Images | YTmate</title>
+  <meta name="description" content="Download YouTube video thumbnails in Ultra HD (1280x720), Full HD (1920x1080), HQ, and SD. Free thumbnail grabber for designers, bloggers, and content creators.">
+  <meta name="keywords" content="youtube thumbnail downloader, grab youtube thumbnail, download youtube cover art, maxresdefault downloader, youtube banner grabber">
+  <link rel="canonical" href="https://ytmate.online/youtube-thumbnail-downloader.html">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ytmate.online/youtube-thumbnail-downloader.html">
+  <meta property="og:title" content="YouTube Thumbnail Downloader - Grab HD 1080p Images | YTmate">
+  <meta property="og:description" content="Extract and download high-resolution YouTube video cover thumbnails.">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff1a40'><polygon points='5 3 19 12 5 21 5 3'/></svg>">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "YTmate Thumbnail Grabber",
+    "url": "https://ytmate.online/youtube-thumbnail-downloader.html",
+    "description": "Download YouTube video thumbnails in max resolution HD JPG format.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "All"
+  }
+  </script>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="index.html" class="site-logo">
+        <div class="logo-badge"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+        <span class="logo-text">YT<span>mate</span></span>
+      </a>
+      <nav aria-label="Main Navigation">
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li class="nav-item-dropdown">
+            <a href="javascript:void(0)" class="nav-link active">Tools ▾</a>
+            <ul class="dropdown-menu">
+              <li><a href="youtube-to-mp3.html" class="dropdown-link">🎵 YouTube to MP3 (320k)</a></li>
+              <li><a href="youtube-to-mp4.html" class="dropdown-link">🎬 YouTube to MP4 HD</a></li>
+              <li><a href="youtube-shorts-downloader.html" class="dropdown-link">⚡ Shorts Downloader</a></li>
+              <li><a href="youtube-4k-downloader.html" class="dropdown-link">🖥️ 4K & 8K Downloader</a></li>
+              <li><a href="youtube-1080p-downloader.html" class="dropdown-link">📺 1080p Full HD</a></li>
+              <li><a href="youtube-audio-downloader.html" class="dropdown-link">🎧 Audio Extractor (WAV/M4A)</a></li>
+              <li><a href="youtube-playlist-downloader.html" class="dropdown-link">📂 Playlist Downloader</a></li>
+              <li><a href="youtube-thumbnail-downloader.html" class="dropdown-link active">🖼️ Thumbnail Downloader</a></li>
+              <li><a href="youtube-subtitles-downloader.html" class="dropdown-link">📝 Subtitles (SRT)</a></li>
+            </ul>
+          </li>
+          <li><a href="how-to-download.html" class="nav-link">How to Download</a></li>
+          <li><a href="supported-formats.html" class="nav-link">Formats</a></li>
+          <li><a href="faq.html" class="nav-link">FAQ</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle></svg></button>
+        <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Toggle mobile menu"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="hero-section">
+      <div class="container">
+        <div class="hero-pill">🖼️ HD COVER THUMBNAIL EXTRACTOR</div>
+        <h1 class="hero-title">YouTube <span class="gradient-text">Thumbnail Downloader</span></h1>
+        <p class="hero-subtitle">Extract and save high-resolution YouTube video cover thumbnails in Maximum Resolution (1280x720), Standard HD, and HQ JPG formats with a single click.</p>
+
+        <div class="downloader-box">
+          <search>
+            <form id="downloaderForm" class="downloader-form" action="#" method="GET">
+              <div class="input-wrapper">
+                <span class="input-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></span>
+                <label for="videoUrlInput" class="sr-only">Paste YouTube link to grab thumbnail</label>
+                <input type="url" id="videoUrlInput" name="url" class="url-input" placeholder="Paste YouTube link to grab thumbnail images..." required>
+                <div class="input-action-btns">
+                  <button type="button" id="btnClear" class="btn-clear">Clear</button>
+                  <button type="button" id="btnPaste" class="btn-paste">Paste</button>
+                </div>
+              </div>
+              <button type="submit" class="btn-download-action">Grab Images</button>
+            </form>
+          </search>
+          <div class="quick-samples">
+            <span>Sample:</span>
+            <button type="button" class="sample-pill" data-url="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Rick Astley Cover</button>
+          </div>
+          <div id="statusMessage" class="status-message" role="alert"></div>
+        </div>
+
+        <!-- Result Container -->
+        <div id="resultContainer" class="result-container">
+          <div class="video-overview">
+            <div class="video-thumb-wrap">
+              <img id="resThumb" class="video-thumb" src="" alt="Thumbnail">
+            </div>
+            <div class="video-info">
+              <h3 id="resTitle">YouTube Thumbnail Artwork</h3>
+              <div class="video-meta">
+                <span><strong id="resAuthor">Creator</strong></span>
+                <span>🖼️ High Resolution Cover</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="format-tabs">
+            <button class="tab-btn active" data-target="tabThumbs">🖼️ Available Resolutions</button>
+          </div>
+
+          <div id="tabThumbs" class="tab-content active">
+            <table class="quality-table">
+              <thead><tr><th>Resolution Name</th><th>Dimensions</th><th>Format</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>Maximum Resolution (maxresdefault)</strong></td>
+                  <td>1280 × 720 (HD)</td>
+                  <td>JPG</td>
+                  <td><button class="btn-table-download" data-format="jpg" data-quality="HD_1280x720">Save MaxRes JPG</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Standard Definition (sddefault)</strong></td>
+                  <td>640 × 480</td>
+                  <td>JPG</td>
+                  <td><button class="btn-table-download" data-format="jpg" data-quality="SD_640x480">Save Standard JPG</button></td>
+                </tr>
+                <tr>
+                  <td><strong>High Quality (hqdefault)</strong></td>
+                  <td>480 × 360</td>
+                  <td>JPG</td>
+                  <td><button class="btn-table-download" data-format="jpg" data-quality="HQ_480x360">Save HQ JPG</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Medium Quality (mqdefault)</strong></td>
+                  <td>320 × 180</td>
+                  <td>JPG</td>
+                  <td><button class="btn-table-download" data-format="jpg" data-quality="MQ_320x180">Save Medium JPG</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal Progress Simulation -->
+    <div id="modalOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-card">
+        <h3 id="modalTitle">Fetching Image</h3>
+        <div class="progress-bar-container"><div id="modalProgressFill" class="progress-bar-fill"></div></div>
+        <p id="modalPercent" style="font-weight: 700; margin-block-end: 0.5rem;">0%</p>
+        <p id="modalDesc" style="color: var(--text-secondary); font-size: 0.9rem;">Retrieving full-resolution JPEG asset...</p>
+      </div>
+    </div>
+
+    <section class="container content-article">
+      <div class="article-header">
+        <h2>Uses for YouTube Video Cover Art</h2>
+        <div class="article-meta">Designer & Creator Tips</div>
+      </div>
+      <div class="prose">
+        <p>Whether you're creating a presentation, writing a blog post review, or designing responsive media cards, having the high-definition 1280×720 cover artwork is essential. Our tool directly pulls the highest quality image that YouTube servers store.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>© 2026 YTmate (ytmate.online). Free YouTube Thumbnail Downloader.</p>
+        <p><a href="terms.html">Terms</a> • <a href="privacy.html">Privacy</a> • <a href="disclaimer.html">Disclaimer</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

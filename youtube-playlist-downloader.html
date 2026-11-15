@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Playlist Downloader - Batch Video & MP3 Album Saver | YTmate</title>
+  <meta name="description" content="Download entire YouTube playlists and music albums in batch with YTmate. Save multi-track courses, podcasts, and video series in 1080p MP4 or 320k MP3.">
+  <meta name="keywords" content="youtube playlist downloader, download youtube playlist to mp3, batch youtube downloader, download youtube album, playlist to zip">
+  <link rel="canonical" href="https://ytmate.online/youtube-playlist-downloader.html">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ytmate.online/youtube-playlist-downloader.html">
+  <meta property="og:title" content="YouTube Playlist Downloader - Batch Video & MP3 | YTmate">
+  <meta property="og:description" content="Download entire YouTube playlists and music albums in batch with one click.">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff1a40'><polygon points='5 3 19 12 5 21 5 3'/></svg>">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "YTmate YouTube Playlist Downloader",
+    "url": "https://ytmate.online/youtube-playlist-downloader.html",
+    "description": "Download entire YouTube playlists in 1080p video or 320kbps MP3 audio.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "All"
+  }
+  </script>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="index.html" class="site-logo">
+        <div class="logo-badge"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+        <span class="logo-text">YT<span>mate</span></span>
+      </a>
+      <nav aria-label="Main Navigation">
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li class="nav-item-dropdown">
+            <a href="javascript:void(0)" class="nav-link active">Tools ▾</a>
+            <ul class="dropdown-menu">
+              <li><a href="youtube-to-mp3.html" class="dropdown-link">🎵 YouTube to MP3 (320k)</a></li>
+              <li><a href="youtube-to-mp4.html" class="dropdown-link">🎬 YouTube to MP4 HD</a></li>
+              <li><a href="youtube-shorts-downloader.html" class="dropdown-link">⚡ Shorts Downloader</a></li>
+              <li><a href="youtube-4k-downloader.html" class="dropdown-link">🖥️ 4K & 8K Downloader</a></li>
+              <li><a href="youtube-1080p-downloader.html" class="dropdown-link">📺 1080p Full HD</a></li>
+              <li><a href="youtube-audio-downloader.html" class="dropdown-link">🎧 Audio Extractor (WAV/M4A)</a></li>
+              <li><a href="youtube-playlist-downloader.html" class="dropdown-link active">📂 Playlist Downloader</a></li>
+              <li><a href="youtube-thumbnail-downloader.html" class="dropdown-link">🖼️ Thumbnail Downloader</a></li>
+              <li><a href="youtube-subtitles-downloader.html" class="dropdown-link">📝 Subtitles (SRT)</a></li>
+            </ul>
+          </li>
+          <li><a href="how-to-download.html" class="nav-link">How to Download</a></li>
+          <li><a href="supported-formats.html" class="nav-link">Formats</a></li>
+          <li><a href="faq.html" class="nav-link">FAQ</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle></svg></button>
+        <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Toggle mobile menu"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="hero-section">
+      <div class="container">
+        <div class="hero-pill">📂 BATCH PLAYLIST & ALBUM DOWNLOADER</div>
+        <h1 class="hero-title">YouTube <span class="gradient-text">Playlist Downloader</span></h1>
+        <p class="hero-subtitle">Download entire YouTube playlists, full music albums, and video courses in a single batch. Choose all MP3 audio tracks or full HD 1080p MP4 videos.</p>
+
+        <div class="downloader-box">
+          <search>
+            <form id="downloaderForm" class="downloader-form" action="#" method="GET">
+              <div class="input-wrapper">
+                <span class="input-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg></span>
+                <label for="videoUrlInput" class="sr-only">Paste YouTube Playlist URL</label>
+                <input type="url" id="videoUrlInput" name="url" class="url-input" placeholder="Paste YouTube playlist URL (e.g. youtube.com/playlist?list=...)..." required>
+                <div class="input-action-btns">
+                  <button type="button" id="btnClear" class="btn-clear">Clear</button>
+                  <button type="button" id="btnPaste" class="btn-paste">Paste</button>
+                </div>
+              </div>
+              <button type="submit" class="btn-download-action">Load Playlist</button>
+            </form>
+          </search>
+          <div class="quick-samples">
+            <span>Sample link:</span>
+            <button type="button" class="sample-pill" data-url="https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLrEnWoR732-BHrPp_AK4VQ37YrxzRNZvu">Music Hits Playlist</button>
+          </div>
+          <div id="statusMessage" class="status-message" role="alert"></div>
+        </div>
+
+        <!-- Result Container -->
+        <div id="resultContainer" class="result-container">
+          <div class="video-overview">
+            <div class="video-thumb-wrap">
+              <img id="resThumb" class="video-thumb" src="" alt="Playlist Thumbnail">
+              <span id="resDuration" class="video-duration-badge">12 Videos</span>
+            </div>
+            <div class="video-info">
+              <h3 id="resTitle">YouTube Music Playlist</h3>
+              <div class="video-meta">
+                <span><strong id="resAuthor">Curator Channel</strong></span>
+                <span>📂 Batch Download Ready</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="format-tabs">
+            <button class="tab-btn active" data-target="tabBatchMp3">🎵 Batch MP3 (All Songs)</button>
+            <button class="tab-btn" data-target="tabBatchMp4">🎬 Batch MP4 (All Videos)</button>
+          </div>
+
+          <div id="tabBatchMp3" class="tab-content active">
+            <table class="quality-table">
+              <thead><tr><th>Track Options</th><th>Format</th><th>Est. Size</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>Download Complete Playlist as MP3 (ZIP Archive)</strong></td>
+                  <td>320 kbps MP3</td>
+                  <td>~115 MB</td>
+                  <td><button class="btn-table-download" data-format="zip" data-quality="All_Tracks_MP3">Download ZIP</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Individual Track 1: Intro Hit</strong></td>
+                  <td>320 kbps MP3</td>
+                  <td>~9.2 MB</td>
+                  <td><button class="btn-table-download" data-format="mp3" data-quality="Track_1_320k">Download Track 1</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Individual Track 2: Chorus Remix</strong></td>
+                  <td>320 kbps MP3</td>
+                  <td>~8.6 MB</td>
+                  <td><button class="btn-table-download" data-format="mp3" data-quality="Track_2_320k">Download Track 2</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="tabBatchMp4" class="tab-content">
+            <table class="quality-table">
+              <thead><tr><th>Batch Video Quality</th><th>Resolution</th><th>Est. Size</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>Download All Videos in 1080p (ZIP)</strong></td>
+                  <td>1080p Full HD</td>
+                  <td>~1.8 GB</td>
+                  <td><button class="btn-table-download" data-format="zip" data-quality="All_Videos_1080p">Download Batch 1080p</button></td>
+                </tr>
+                <tr>
+                  <td><strong>Download All Videos in 720p (ZIP)</strong></td>
+                  <td>720p HD</td>
+                  <td>~850 MB</td>
+                  <td><button class="btn-table-download" data-format="zip" data-quality="All_Videos_720p">Download Batch 720p</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal Progress Simulation -->
+    <div id="modalOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-card">
+        <h3 id="modalTitle">Packaging Playlist Archive</h3>
+        <div class="progress-bar-container"><div id="modalProgressFill" class="progress-bar-fill"></div></div>
+        <p id="modalPercent" style="font-weight: 700; margin-block-end: 0.5rem;">0%</p>
+        <p id="modalDesc" style="color: var(--text-secondary); font-size: 0.9rem;">Gathering playlist tracks and compressing archive...</p>
+      </div>
+    </div>
+
+    <section class="container content-article">
+      <div class="article-header">
+        <h2>How to Download Full YouTube Playlists</h2>
+        <div class="article-meta">Playlist Helper Tutorial</div>
+      </div>
+      <div class="prose">
+        <p>Instead of downloading tracks one by one, YTmate allows you to paste the URL of any public YouTube playlist. Our engine parses the playlist index, calculates the required video or MP3 streams, and lets you download the complete set packaged conveniently in a single ZIP file or choose individual tracks.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>© 2026 YTmate (ytmate.online). Free YouTube Playlist Downloader.</p>
+        <p><a href="terms.html">Terms</a> • <a href="privacy.html">Privacy</a> • <a href="disclaimer.html">Disclaimer</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

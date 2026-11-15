@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supported Formats & Resolutions Reference | YTmate</title>
+  <meta name="description" content="Complete technical specifications of all video resolutions (8K, 4K, 1440p, 1080p, 720p, 480p) and audio bitrates (320kbps MP3, WAV, AAC, M4A) supported by YTmate.">
+  <meta name="keywords" content="youtube video resolutions, 8k vs 4k vs 1080p, mp3 bitrates 320kbps vs 256kbps, youtube formats support, ytmate codecs">
+  <link rel="canonical" href="https://ytmate.online/supported-formats.html">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff1a40'><polygon points='5 3 19 12 5 21 5 3'/></svg>">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="index.html" class="site-logo">
+        <div class="logo-badge"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+        <span class="logo-text">YT<span>mate</span></span>
+      </a>
+      <nav aria-label="Main Navigation">
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li class="nav-item-dropdown">
+            <a href="javascript:void(0)" class="nav-link">Tools ▾</a>
+            <ul class="dropdown-menu">
+              <li><a href="youtube-to-mp3.html" class="dropdown-link">🎵 YouTube to MP3 (320k)</a></li>
+              <li><a href="youtube-to-mp4.html" class="dropdown-link">🎬 YouTube to MP4 HD</a></li>
+              <li><a href="youtube-shorts-downloader.html" class="dropdown-link">⚡ Shorts Downloader</a></li>
+              <li><a href="youtube-4k-downloader.html" class="dropdown-link">🖥️ 4K & 8K Downloader</a></li>
+              <li><a href="youtube-1080p-downloader.html" class="dropdown-link">📺 1080p Full HD</a></li>
+              <li><a href="youtube-audio-downloader.html" class="dropdown-link">🎧 Audio Extractor (WAV/M4A)</a></li>
+              <li><a href="youtube-playlist-downloader.html" class="dropdown-link">📂 Playlist Downloader</a></li>
+              <li><a href="youtube-thumbnail-downloader.html" class="dropdown-link">🖼️ Thumbnail Downloader</a></li>
+              <li><a href="youtube-subtitles-downloader.html" class="dropdown-link">📝 Subtitles (SRT)</a></li>
+            </ul>
+          </li>
+          <li><a href="how-to-download.html" class="nav-link">How to Download</a></li>
+          <li><a href="supported-formats.html" class="nav-link active">Formats</a></li>
+          <li><a href="faq.html" class="nav-link">FAQ</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle></svg></button>
+        <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Toggle mobile menu"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <div class="container content-article">
+      <div class="article-header">
+        <h1>Supported Video & Audio Formats & Resolutions</h1>
+        <div class="article-meta">Technical Reference Document • Updated November 2026</div>
+      </div>
+
+      <div class="prose">
+        <p><strong>YTmate</strong> is engineered to handle every container, codec, video resolution, and audio bitrate natively output by modern streaming pipelines. Below is the complete specification matrix.</p>
+
+        <h2>Video Resolutions & Containers</h2>
+        <div class="table-responsive-wrapper">
+          <table class="specs-table">
+            <thead>
+              <tr>
+                <th>Profile</th>
+                <th>Pixel Dimensions</th>
+                <th>Aspect Ratio</th>
+                <th>Frame Rate</th>
+                <th>Container & Codecs</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>8K Ultra HD</strong></td>
+                <td>7680 × 4320</td>
+                <td>16:9 Landscape</td>
+                <td>Up to 60 FPS</td>
+                <td>MP4, WebM (AV1, VP9)</td>
+              </tr>
+              <tr>
+                <td><strong>4K Ultra HD</strong></td>
+                <td>3840 × 2160</td>
+                <td>16:9 Landscape</td>
+                <td>Up to 60 FPS HDR</td>
+                <td>MP4 (H.264 / VP9)</td>
+              </tr>
+              <tr>
+                <td><strong>2K Quad HD (1440p)</strong></td>
+                <td>2560 × 1440</td>
+                <td>16:9 Landscape</td>
+                <td>30 / 60 FPS</td>
+                <td>MP4 (H.264)</td>
+              </tr>
+              <tr>
+                <td><strong>1080p Full HD</strong></td>
+                <td>1920 × 1080</td>
+                <td>16:9 Landscape</td>
+                <td>30 / 60 FPS</td>
+                <td>MP4 (H.264 / AVC)</td>
+              </tr>
+              <tr>
+                <td><strong>720p HD</strong></td>
+                <td>1280 × 720</td>
+                <td>16:9 Landscape</td>
+                <td>30 / 60 FPS</td>
+                <td>MP4 (H.264)</td>
+              </tr>
+              <tr>
+                <td><strong>Shorts Vertical HD</strong></td>
+                <td>1080 × 1920</td>
+                <td>9:16 Portrait</td>
+                <td>30 / 60 FPS</td>
+                <td>MP4</td>
+              </tr>
+              <tr>
+                <td><strong>480p Standard</strong></td>
+                <td>854 × 480</td>
+                <td>16:9 Landscape</td>
+                <td>30 FPS</td>
+                <td>MP4</td>
+              </tr>
+              <tr>
+                <td><strong>360p & 240p</strong></td>
+                <td>640 × 360 / 426 × 240</td>
+                <td>16:9 Landscape</td>
+                <td>30 FPS</td>
+                <td>MP4 (Data Saver)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2>Audio Bitrates & Containers</h2>
+        <div class="table-responsive-wrapper">
+          <table class="specs-table">
+            <thead>
+              <tr>
+                <th>Audio Format</th>
+                <th>Bitrate</th>
+                <th>Sample Rate</th>
+                <th>Channels</th>
+                <th>Best Application</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>MP3 Studio</strong></td>
+                <td>320 kbps (CBR)</td>
+                <td>48.0 kHz</td>
+                <td>Stereo 2.0</td>
+                <td>Audiophile listening, Hi-Fi stereo systems</td>
+              </tr>
+              <tr>
+                <td><strong>MP3 High Fidelity</strong></td>
+                <td>256 kbps (VBR)</td>
+                <td>44.1 kHz</td>
+                <td>Stereo 2.0</td>
+                <td>Everyday music collections, mobile devices</td>
+              </tr>
+              <tr>
+                <td><strong>MP3 Standard</strong></td>
+                <td>192 kbps (CBR)</td>
+                <td>44.1 kHz</td>
+                <td>Stereo 2.0</td>
+                <td>Radio broadcast quality, audiobooks</td>
+              </tr>
+              <tr>
+                <td><strong>MP3 Compact</strong></td>
+                <td>128 kbps (CBR)</td>
+                <td>44.1 kHz</td>
+                <td>Stereo / Joint</td>
+                <td>Lectures, podcasts, minimal storage</td>
+              </tr>
+              <tr>
+                <td><strong>M4A / AAC</strong></td>
+                <td>Up to 256 kbps</td>
+                <td>48.0 kHz</td>
+                <td>Stereo 2.0</td>
+                <td>Apple Ecosystem (iPhone, Mac, AirPods)</td>
+              </tr>
+              <tr>
+                <td><strong>WAV</strong></td>
+                <td>1411 kbps (Uncompressed)</td>
+                <td>48.0 kHz 16-bit PCM</td>
+                <td>Stereo 2.0</td>
+                <td>DAW music production, remixes, video editing</td>
+              </tr>
+              <tr>
+                <td><strong>WebM Opus</strong></td>
+                <td>160 kbps VBR</td>
+                <td>48.0 kHz</td>
+                <td>Stereo 2.0</td>
+                <td>Modern browser streaming, Discord bots</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>© 2026 YTmate (ytmate.online). All rights reserved.</p>
+        <p><a href="index.html">Back to Downloader</a> • <a href="terms.html">Terms</a> • <a href="privacy.html">Privacy</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

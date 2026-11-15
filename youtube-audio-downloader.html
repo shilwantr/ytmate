@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Audio Downloader - Extract WAV, M4A, AAC, MP3 & FLAC | YTmate</title>
+  <meta name="description" content="Extract audio from YouTube in uncompressed WAV, Apple M4A, AAC, and MP3 formats. Free online audio ripper for music producers, audiophiles, and creators.">
+  <meta name="keywords" content="youtube audio downloader, extract audio from youtube, youtube to wav, youtube to m4a, download youtube music lossless">
+  <link rel="canonical" href="https://ytmate.online/youtube-audio-downloader.html">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ytmate.online/youtube-audio-downloader.html">
+  <meta property="og:title" content="YouTube Audio Downloader - WAV, M4A, AAC, MP3 | YTmate">
+  <meta property="og:description" content="Extract audio tracks from YouTube in lossless WAV, M4A, AAC, and MP3.">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff1a40'><polygon points='5 3 19 12 5 21 5 3'/></svg>">
+  <link rel="stylesheet" href="css/styles.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "YTmate Audio Extractor",
+    "url": "https://ytmate.online/youtube-audio-downloader.html",
+    "description": "Extract audio tracks in multiple studio formats: WAV, M4A, AAC, and MP3.",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "All"
+  }
+  </script>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <header class="site-header">
+    <div class="container nav-container">
+      <a href="index.html" class="site-logo">
+        <div class="logo-badge"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div>
+        <span class="logo-text">YT<span>mate</span></span>
+      </a>
+      <nav aria-label="Main Navigation">
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li class="nav-item-dropdown">
+            <a href="javascript:void(0)" class="nav-link active">Tools ▾</a>
+            <ul class="dropdown-menu">
+              <li><a href="youtube-to-mp3.html" class="dropdown-link">🎵 YouTube to MP3 (320k)</a></li>
+              <li><a href="youtube-to-mp4.html" class="dropdown-link">🎬 YouTube to MP4 HD</a></li>
+              <li><a href="youtube-shorts-downloader.html" class="dropdown-link">⚡ Shorts Downloader</a></li>
+              <li><a href="youtube-4k-downloader.html" class="dropdown-link">🖥️ 4K & 8K Downloader</a></li>
+              <li><a href="youtube-1080p-downloader.html" class="dropdown-link">📺 1080p Full HD</a></li>
+              <li><a href="youtube-audio-downloader.html" class="dropdown-link active">🎧 Audio Extractor (WAV/M4A)</a></li>
+              <li><a href="youtube-playlist-downloader.html" class="dropdown-link">📂 Playlist Downloader</a></li>
+              <li><a href="youtube-thumbnail-downloader.html" class="dropdown-link">🖼️ Thumbnail Downloader</a></li>
+              <li><a href="youtube-subtitles-downloader.html" class="dropdown-link">📝 Subtitles (SRT)</a></li>
+            </ul>
+          </li>
+          <li><a href="how-to-download.html" class="nav-link">How to Download</a></li>
+          <li><a href="supported-formats.html" class="nav-link">Formats</a></li>
+          <li><a href="faq.html" class="nav-link">FAQ</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <button id="themeToggle" class="theme-toggle-btn" aria-label="Toggle theme"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle></svg></button>
+        <button id="mobileMenuBtn" class="mobile-menu-btn" aria-label="Toggle mobile menu"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="hero-section">
+      <div class="container">
+        <div class="hero-pill">🎧 LOSSLESS & MULTI-FORMAT AUDIO RIPPER</div>
+        <h1 class="hero-title">YouTube <span class="gradient-text">Audio Downloader</span></h1>
+        <p class="hero-subtitle">Extract audio in pristine formats: uncompressed WAV, native Apple M4A/AAC, WebM Opus, and MP3. Built for music editors, sound designers, and audiophiles.</p>
+
+        <div class="downloader-box">
+          <search>
+            <form id="downloaderForm" class="downloader-form" action="#" method="GET">
+              <div class="input-wrapper">
+                <span class="input-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg></span>
+                <label for="videoUrlInput" class="sr-only">Paste YouTube link to extract audio</label>
+                <input type="url" id="videoUrlInput" name="url" class="url-input" placeholder="Paste YouTube link to extract audio..." required>
+                <div class="input-action-btns">
+                  <button type="button" id="btnClear" class="btn-clear">Clear</button>
+                  <button type="button" id="btnPaste" class="btn-paste">Paste</button>
+                </div>
+              </div>
+              <button type="submit" class="btn-download-action">Extract Audio</button>
+            </form>
+          </search>
+          <div class="quick-samples">
+            <span>Try sample audio:</span>
+            <button type="button" class="sample-pill" data-url="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Acoustic Studio Track</button>
+          </div>
+          <div id="statusMessage" class="status-message" role="alert"></div>
+        </div>
+
+        <!-- Result Container -->
+        <div id="resultContainer" class="result-container">
+          <div class="video-overview">
+            <div class="video-thumb-wrap">
+              <img id="resThumb" class="video-thumb" src="" alt="Thumbnail">
+              <span id="resDuration" class="video-duration-badge">03:32</span>
+            </div>
+            <div class="video-info">
+              <h3 id="resTitle">YouTube Audio Source</h3>
+              <div class="video-meta">
+                <span><strong id="resAuthor">Audio Artist</strong></span>
+                <span>🎧 Multi-Format Sound Stream</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="format-tabs">
+            <button class="tab-btn active" data-target="tabLossless">🎧 Lossless Formats</button>
+            <button class="tab-btn" data-target="tabMp3">🎵 Standard MP3</button>
+          </div>
+
+          <div id="tabLossless" class="tab-content active">
+            <table class="quality-table">
+              <thead><tr><th>Format</th><th>Sample Rate</th><th>Best For</th><th>Est. Size</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong style="color: var(--accent-red)">WAV (PCM 16-bit)</strong></td>
+                  <td>48.0 kHz Uncompressed</td>
+                  <td>DAWs, Logic Pro, Ableton, FL Studio</td>
+                  <td>~38 MB</td>
+                  <td><button class="btn-table-download" data-format="wav" data-quality="WAV_Lossless">Download WAV</button></td>
+                </tr>
+                <tr>
+                  <td><strong style="color: var(--accent-red)">M4A / AAC</strong></td>
+                  <td>256 kbps Native Stream</td>
+                  <td>Apple Music, iPhone, iPad</td>
+                  <td>~8.8 MB</td>
+                  <td><button class="btn-table-download" data-format="m4a" data-quality="M4A_AAC">Download M4A</button></td>
+                </tr>
+                <tr>
+                  <td><strong style="color: var(--accent-red)">WebM (Opus)</strong></td>
+                  <td>160 kbps Ultra-efficient</td>
+                  <td>Web players, Discord bots, Android</td>
+                  <td>~6.2 MB</td>
+                  <td><button class="btn-table-download" data-format="webm" data-quality="WebM_Opus">Download Opus</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="tabMp3" class="tab-content">
+            <table class="quality-table">
+              <thead><tr><th>Bitrate</th><th>Format</th><th>Download</th></tr></thead>
+              <tbody>
+                <tr><td>320 kbps (Extreme)</td><td>MP3</td><td><button class="btn-table-download" data-format="mp3" data-quality="320kbps">Download MP3</button></td></tr>
+                <tr><td>256 kbps (High)</td><td>MP3</td><td><button class="btn-table-download" data-format="mp3" data-quality="256kbps">Download MP3</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal Progress Simulation -->
+    <div id="modalOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-card">
+        <h3 id="modalTitle">Extracting Audio Track</h3>
+        <div class="progress-bar-container"><div id="modalProgressFill" class="progress-bar-fill"></div></div>
+        <p id="modalPercent" style="font-weight: 700; margin-block-end: 0.5rem;">0%</p>
+        <p id="modalDesc" style="color: var(--text-secondary); font-size: 0.9rem;">De-muxing audio stream from YouTube source...</p>
+      </div>
+    </div>
+
+    <section class="container content-article">
+      <div class="article-header">
+        <h2>Audio Format Guide: WAV vs M4A vs MP3</h2>
+        <div class="article-meta">Acoustic Engineering Reference</div>
+      </div>
+      <div class="prose">
+        <p>If you're using audio for music production, podcasts, or high-end listening, choosing the correct container format matters:</p>
+        <ul>
+          <li><strong>WAV:</strong> An uncompressed linear pulse code modulation (LPCM) format. No frequency degradation or lossy psychoacoustic compression. Essential for video editors and music remixers.</li>
+          <li><strong>M4A (AAC):</strong> YouTube's original high-tier audio format is AAC. Downloading M4A gives you the pure, untranscoded audio track without any quality loss from re-encoding.</li>
+          <li><strong>MP3:</strong> The universal standard. Compatible with all cars, legacy MP3 players, and smartphones.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-bottom">
+        <p>© 2026 YTmate (ytmate.online). Free YouTube Audio Downloader.</p>
+        <p><a href="terms.html">Terms</a> • <a href="privacy.html">Privacy</a> • <a href="disclaimer.html">Disclaimer</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

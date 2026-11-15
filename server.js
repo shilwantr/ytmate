@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { spawn } = require('child_process');
+const { exec } = require('child_process');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,17 +20,18 @@ function parseYouTubeId(url) {
   return null;
 }
 
-// API Health Check
+// Check Backend Status
 app.get('/api/status', (req, res) => {
   res.json({
     status: 'online',
-    service: 'YTmate Engine',
-    version: '1.2.0',
+    service: 'YTmate Clean Ad-Free Engine',
+    version: '2.0.0',
+    adFree: true,
     timestamp: new Date().toISOString()
   });
 });
 
-// API Info Endpoint
+// Video Metadata Info
 app.get('/api/info', async (req, res) => {
   const { url } = req.query;
   const videoId = parseYouTubeId(url);
@@ -52,7 +53,7 @@ app.get('/api/info', async (req, res) => {
       });
     }
   } catch (err) {
-    console.error('Info lookup error:', err);
+    console.warn('Metadata lookup warning:', err.message);
   }
 
   res.json({
@@ -64,40 +65,44 @@ app.get('/api/info', async (req, res) => {
   });
 });
 
-// API Download Redirect / Proxy Endpoint
-app.get('/api/download', (req, res) => {
+// Direct Ad-Free Stream Extractor
+app.get('/api/stream', (req, res) => {
   const { url, format = 'mp4', quality = '1080' } = req.query;
   const videoId = parseYouTubeId(url);
 
   if (!videoId) {
-    return res.status(400).json({ error: 'Invalid YouTube video URL' });
+    return res.status(400).json({ error: 'Invalid YouTube URL' });
   }
 
-  // Format mapping for saver gateways
-  let targetFormat = 'mp4';
-  if (format.toLowerCase().includes('mp3')) {
-    targetFormat = 'mp3';
-  } else if (quality.includes('4k') || quality.includes('2160')) {
-    targetFormat = '4k';
-  } else if (quality.includes('1080')) {
-    targetFormat = '1080';
-  } else if (quality.includes('720')) {
-    targetFormat = '720';
-  } else if (format.toLowerCase().includes('wav')) {
-    targetFormat = 'wav';
-  } else if (format.toLowerCase().includes('m4a')) {
-    targetFormat = 'm4a';
-  }
+  const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
+  const isAudio = format.toLowerCase().includes('mp3') || format.toLowerCase().includes('wav') || format.toLowerCase().includes('m4a');
+  
+  // Format selector for yt-dlp
+  const formatArg = isAudio ? '-f ba/b' : '-f b/bv*+ba/b';
+  const cmd = `python -m yt_dlp --js-runtimes node:node ${formatArg} -g "${youtubeUrl}"`;
 
-  // Primary Gateway Redirect
-  const gatewayUrl = `https://p.savenow.to/api/button/?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D${videoId}&f=${targetFormat}`;
-  res.redirect(gatewayUrl);
+  exec(cmd, { timeout: 25000 }, (error, stdout, stderr) => {
+    if (error) {
+      console.error('yt-dlp extraction error:', stderr || error.message);
+      // Fallback redirect to ad-free Cobalt
+      return res.redirect(`https://cobalt.tools/?u=${encodeURIComponent(youtubeUrl)}`);
+    }
+
+    const streamUrls = stdout.trim().split('\n').map(u => u.trim()).filter(u => u.startsWith('http'));
+    if (streamUrls.length === 0) {
+      return res.redirect(`https://cobalt.tools/?u=${encodeURIComponent(youtubeUrl)}`);
+    }
+
+    // Direct redirect to clean GoogleVideo media stream with zero ads
+    const chosenStream = streamUrls[0];
+    res.redirect(chosenStream);
+  });
 });
 
 // Start Server
 app.listen(PORT, () => {
-  console.log(`===============================================`);
-  console.log(`  YTmate Server is running on port ${PORT}`);
-  console.log(`  Local URL: http://localhost:${PORT}`);
-  console.log(`===============================================`);
+  console.log(`=======================================================`);
+  console.log(`  YTmate Ad-Free Engine running on http://localhost:${PORT}`);
+  console.log(`  100% Ad-Free, No Popups, No Third-Party Trackers`);
+  console.log(`=======================================================`);
 });

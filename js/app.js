@@ -1,10 +1,12 @@
 /**
  * YTMATE.ONLINE - High-Performance Client Engine
- * Live YouTube Metadata Parser, In-Page Downloader Widget & Multi-Gateway Media Streamer
+ * 100% Ad-Free YouTube Metadata Parser & Direct Stream Downloader
+ * Strict Zero-Ad, Zero-Popup, Zero-Tracker Policy
  */
 
 let currentVideoId = null;
 let currentVideoData = null;
+let hasLocalBackend = false;
 
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
@@ -13,7 +15,26 @@ document.addEventListener('DOMContentLoaded', () => {
   initTabs();
   initFaqAccordion();
   initModalListeners();
+  checkBackendStatus();
 });
+
+/* ==========================================================================
+   Backend Status Detection (Zero-Ad Direct Streaming)
+   ========================================================================== */
+async function checkBackendStatus() {
+  try {
+    const res = await fetch('/api/status');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.status === 'online') {
+        hasLocalBackend = true;
+        console.log('YTmate Clean Ad-Free Engine Active.');
+      }
+    }
+  } catch (err) {
+    hasLocalBackend = false;
+  }
+}
 
 /* ==========================================================================
    Theme Management (Light / Dark)
@@ -44,15 +65,6 @@ function setTheme(theme) {
     themeToggle.innerHTML = theme === 'dark' 
       ? `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>`
       : `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
-  }
-
-  // Update embedded widget theme if present
-  const widgetFrame = document.getElementById('dlWidgetFrame');
-  if (widgetFrame && currentVideoId) {
-    const isMp3Page = window.location.pathname.includes('mp3');
-    const isMp4Page = window.location.pathname.includes('mp4');
-    const widgetType = isMp3Page ? 'single-button/mp3' : (isMp4Page ? 'single-button/mp4' : 'multi-button');
-    widgetFrame.src = `https://bestapi.cc/widget/${widgetType}/${currentVideoId}/${theme}`;
   }
 }
 
@@ -216,7 +228,6 @@ async function handleVideoAnalysis(rawUrl) {
   };
 
   try {
-    // Query noembed which provides CORS-friendly public JSON
     const res = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
     if (res.ok) {
       const data = await res.json();
@@ -237,7 +248,7 @@ async function handleVideoAnalysis(rawUrl) {
 }
 
 /* ==========================================================================
-   Render Results & Embed Real Conversion Widget
+   Render Results & Clean 100% Ad-Free Direct Actions
    ========================================================================== */
 function renderVideoResult(data) {
   const resultCard = document.getElementById('resultContainer');
@@ -258,20 +269,17 @@ function renderVideoResult(data) {
     };
   }
 
-  // Inject or update in-page direct downloader widget
+  // 100% Clean Ad-Free Quick Action Bar
   let liveWidgetBox = document.getElementById('liveWidgetBox');
-  const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-  const isMp3Page = window.location.pathname.includes('mp3');
-  const isMp4Page = window.location.pathname.includes('mp4');
-  const widgetType = isMp3Page ? 'single-button/mp3' : (isMp4Page ? 'single-button/mp4' : 'multi-button');
-  const widgetUrl = `https://bestapi.cc/widget/${widgetType}/${data.id}/${currentTheme}`;
+  const ytUrl = `https://www.youtube.com/watch?v=${data.id}`;
+  const cobaltUrl = `https://cobalt.tools/?u=${encodeURIComponent(ytUrl)}`;
+  const directStreamUrl = `/api/stream?url=${encodeURIComponent(ytUrl)}`;
 
   if (!liveWidgetBox) {
     liveWidgetBox = document.createElement('div');
     liveWidgetBox.id = 'liveWidgetBox';
     liveWidgetBox.className = 'live-widget-box';
     
-    // Insert before format tabs
     const formatTabs = resultCard.querySelector('.format-tabs');
     if (formatTabs) {
       resultCard.insertBefore(liveWidgetBox, formatTabs);
@@ -282,28 +290,27 @@ function renderVideoResult(data) {
 
   liveWidgetBox.innerHTML = `
     <div class="widget-badge-label">
-      <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-      Direct 1-Click Stream Downloader
+      <svg width="14" height="14" fill="#10b981" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      100% Ad-Free Direct Stream Engine
     </div>
-    <div class="live-widget-iframe-container">
-      <iframe id="dlWidgetFrame" 
-              src="${widgetUrl}" 
-              width="100%" 
-              height="75px" 
-              allowtransparency="true" 
-              scrolling="no" 
-              style="border:none;">
-      </iframe>
+    <div style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; margin-top: 0.5rem;">
+      <a href="${directStreamUrl}" target="_blank" rel="noopener noreferrer" class="btn-download-action" style="height: 48px; padding: 0 1.5rem; font-size: 0.95rem; text-decoration: none;">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Instant Direct Download (Zero Ads)
+      </a>
+      <a href="${cobaltUrl}" target="_blank" rel="noopener noreferrer" class="mirror-btn" style="height: 48px; padding: 0 1.5rem; font-size: 0.95rem;">
+        ⚡ Open-Source Mirror (Cobalt Ad-Free)
+      </a>
     </div>
   `;
 
   resultCard.style.display = 'block';
   resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  showToast('Video ready! Use the direct download bar or choose a specific resolution below.', 'success');
+  showToast('Video ready! Clean, direct, ad-free downloads available below.', 'success');
 }
 
 /* ==========================================================================
-   Real Execution of Downloads & Stream Converters
+   Real Execution of Ad-Free Downloads
    ========================================================================== */
 function executeDownload(format, quality) {
   if (!currentVideoId) {
@@ -313,15 +320,15 @@ function executeDownload(format, quality) {
 
   const vId = currentVideoId;
   const vTitle = currentVideoData ? currentVideoData.title : `YouTube_${vId}`;
+  const ytUrl = `https://www.youtube.com/watch?v=${vId}`;
 
-  // 1. Handle Thumbnail Image Downloads
+  // 1. Handle Thumbnail Image Downloads (Direct image file with zero ads)
   if (format === 'jpg') {
     let imgUrl = `https://img.youtube.com/vi/${vId}/maxresdefault.jpg`;
     if (quality.includes('SD')) imgUrl = `https://img.youtube.com/vi/${vId}/sddefault.jpg`;
     if (quality.includes('HQ')) imgUrl = `https://img.youtube.com/vi/${vId}/hqdefault.jpg`;
     if (quality.includes('MQ')) imgUrl = `https://img.youtube.com/vi/${vId}/mqdefault.jpg`;
 
-    // Direct download trigger
     const a = document.createElement('a');
     a.href = imgUrl;
     a.target = '_blank';
@@ -330,19 +337,19 @@ function executeDownload(format, quality) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    showToast(`Opening high-res image: ${quality}`, 'success');
+    showToast(`Downloading high-res image: ${quality}`, 'success');
     return;
   }
 
   // 2. Handle Subtitles
   if (['srt', 'vtt', 'txt'].includes(format.toLowerCase())) {
-    const subUrl = `https://downsub.com/?url=https://www.youtube.com/watch?v=${vId}`;
+    const subUrl = `https://downsub.com/?url=${encodeURIComponent(ytUrl)}`;
     window.open(subUrl, '_blank', 'noopener,noreferrer');
     showToast(`Opening subtitle extractor for ${format.toUpperCase()}...`, 'info');
     return;
   }
 
-  // 3. Handle Audio & Video Formats
+  // 3. Audio & Video Formats
   let formatParam = 'mp4';
   let displayTitle = 'Download Video';
 
@@ -382,57 +389,47 @@ function executeDownload(format, quality) {
 }
 
 /* ==========================================================================
-   Download Modal Management with Real Working Streams & Alternative Mirrors
+   Clean Ad-Free Download Modal (Zero Ads, Zero Third-Party Iframes)
    ========================================================================== */
 function openDownloadModal(videoId, videoTitle, displayTitle, formatParam) {
   let overlay = document.getElementById('modalOverlay');
   if (!overlay) return;
 
-  const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-  const saveNowUrl = `https://p.savenow.to/api/button/?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D${videoId}&f=${formatParam}`;
-  const y2metaUrl = `https://y2meta.tube/en/?url=https://www.youtube.com/watch?v=${videoId}`;
-  const tenDownloaderUrl = `https://10downloader.com/download?v=${videoId}`;
-  const ssYoutubeUrl = `https://ssyoutube.com/watch?v=${videoId}`;
-  const cobaltUrl = `https://cobalt.tools/`;
-  const directLoaderUrl = `https://loader.to/api/button/?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D${videoId}&f=${formatParam}`;
+  const ytUrl = `https://www.youtube.com/watch?v=${videoId}`;
+  const directStreamUrl = `/api/stream?url=${encodeURIComponent(ytUrl)}&format=${formatParam}`;
+  const cobaltUrl = `https://cobalt.tools/?u=${encodeURIComponent(ytUrl)}`;
 
   overlay.innerHTML = `
-    <div class="modal-card" style="max-width: 560px;">
+    <div class="modal-card" style="max-width: 520px;">
       <button type="button" class="modal-close-btn" id="modalCloseBtn" aria-label="Close modal">×</button>
       
-      <div style="margin-block-end: 1rem;">
-        <span class="quality-badge badge-1080p" style="margin-bottom: 0.5rem;">READY TO DOWNLOAD</span>
-        <h3 style="font-size: 1.25rem; font-weight: 700; margin-top: 0.5rem;">${displayTitle}</h3>
+      <div style="margin-block-end: 1.25rem;">
+        <span class="quality-badge badge-1080p" style="margin-bottom: 0.5rem; background: #10b981; color: #fff;">
+          ✓ 100% AD-FREE & SAFE
+        </span>
+        <h3 style="font-size: 1.3rem; font-weight: 700; margin-top: 0.5rem;">${displayTitle}</h3>
         <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.25rem;">${videoTitle}</p>
       </div>
 
-      <!-- Live Stream Conversion Frame -->
-      <div style="background: var(--bg-tertiary); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 0.75rem; margin-block: 1rem;">
-        <p style="font-size: 0.8rem; font-weight: 600; color: var(--accent-red); margin-bottom: 0.5rem; text-transform: uppercase;">
-          Server 1: High-Speed Instant Converter
+      <!-- Primary Ad-Free Direct Stream Button -->
+      <div style="background: var(--bg-tertiary); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 1.25rem; margin-block: 1rem; text-align: center;">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Download directly with zero advertisements, zero popups, and high bandwidth.
         </p>
-        <iframe src="${saveNowUrl}" class="modal-server-widget" allowtransparency="true" scrolling="no"></iframe>
+        <a href="${directStreamUrl}" target="_blank" rel="noopener noreferrer" class="btn-download-action" style="width: 100%; justify-content: center; height: 52px; text-decoration: none; font-size: 1rem;">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Direct Download Now (No Ads)
+        </a>
       </div>
 
-      <!-- Direct Fallback & Alternative Mirrors -->
-      <div style="margin-top: 1.25rem; text-align: left;">
-        <p style="font-size: 0.825rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">
-          Alternative 1-Click Fast Mirrors:
+      <!-- Open Source Ad-Free Alternative Mirror -->
+      <div style="margin-top: 1rem; text-align: left;">
+        <p style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">
+          Open-Source Ad-Free Mirror:
         </p>
-        <div class="modal-mirror-grid">
-          <a href="${directLoaderUrl}" target="_blank" rel="noopener noreferrer" class="mirror-btn" style="background: var(--accent-gradient); color: #fff; border: none;">
-            ⚡ Direct Stream Gateway
-          </a>
-          <a href="${tenDownloaderUrl}" target="_blank" rel="noopener noreferrer" class="mirror-btn">
-            🎬 10Downloader Mirror
-          </a>
-          <a href="${y2metaUrl}" target="_blank" rel="noopener noreferrer" class="mirror-btn">
-            🎵 Y2Meta Downloader
-          </a>
-          <a href="${ssYoutubeUrl}" target="_blank" rel="noopener noreferrer" class="mirror-btn">
-            📺 SSYouTube Mirror
-          </a>
-        </div>
+        <a href="${cobaltUrl}" target="_blank" rel="noopener noreferrer" class="mirror-btn" style="width: 100%; justify-content: center; padding: 0.75rem 1rem;">
+          ⚡ Open in Cobalt Tools (100% Ad-Free, Open Source)
+        </a>
       </div>
     </div>
   `;

@@ -431,49 +431,53 @@ function executeDownload(format, quality) {
     displayTitle = 'Download 360p Video';
   }
 
+  const fileExt = formatParam === 'mp3' ? 'mp3' : 'mp4';
+  const safeName = (vTitle || 'video').replace(/[^\w\s\-]/gi, '').trim().replace(/\s+/g, '_') || `youtube_${vId}`;
+  const filename = `${safeName}.${fileExt}`;
+
   // If backend is active, trigger direct download immediately with NO REDIRECT
   if (hasLocalBackend) {
     const streamEndpoint = backendApiUrl 
-      ? `${backendApiUrl}/api/stream?url=${encodeURIComponent(ytUrl)}&format=${formatParam}&quality=${qualityParam}`
-      : `/api/stream?url=${encodeURIComponent(ytUrl)}&format=${formatParam}&quality=${qualityParam}`;
+      ? `${backendApiUrl}/api/download/${encodeURIComponent(filename)}?url=${encodeURIComponent(ytUrl)}&format=${formatParam}&quality=${qualityParam}`
+      : `/api/download/${encodeURIComponent(filename)}?url=${encodeURIComponent(ytUrl)}&format=${formatParam}&quality=${qualityParam}`;
 
-    triggerDirectDownload(streamEndpoint, displayTitle);
+    triggerDirectDownload(streamEndpoint, filename, displayTitle);
   } else {
     // If backend is not detected, open the modal with options to connect backend or use mirror
-    openDownloadModal(vId, vTitle, displayTitle, formatParam, qualityParam);
+    openDownloadModal(vId, vTitle, displayTitle, formatParam, qualityParam, filename);
   }
 }
 
 /* ==========================================================================
    Zero-Redirect Direct Browser Download Trigger
    ========================================================================== */
-function triggerDirectDownload(streamUrl, displayTitle = 'Your download') {
-  showToast(`📥 Starting direct download for ${displayTitle}! Zero redirects, saving to your device...`, 'success');
+function triggerDirectDownload(streamUrl, filename, displayTitle = 'Your download') {
+  showToast(`📥 Starting direct download for ${displayTitle}! Saving ${filename} directly to your device...`, 'success');
 
-  // Trigger browser download via invisible iframe / anchor with download attribute
+  // Trigger browser download via invisible anchor with explicit filename and extension
   const hiddenLink = document.createElement('a');
   hiddenLink.href = streamUrl;
-  hiddenLink.setAttribute('download', '');
+  hiddenLink.setAttribute('download', filename);
   hiddenLink.style.display = 'none';
   document.body.appendChild(hiddenLink);
   hiddenLink.click();
   setTimeout(() => {
     hiddenLink.remove();
-  }, 2000);
+  }, 3000);
 }
 
 /* ==========================================================================
    Download Modal Dialog (Direct Download + Clean Fallback)
    ========================================================================== */
-function openDownloadModal(videoId, videoTitle, displayTitle, formatParam, qualityParam) {
+function openDownloadModal(videoId, videoTitle, displayTitle, formatParam, qualityParam, filename) {
   let overlay = document.getElementById('modalOverlay');
   if (!overlay) return;
 
   const ytUrl = `https://www.youtube.com/watch?v=${videoId}`;
   const encodedYtUrl = encodeURIComponent(ytUrl);
   const streamEndpoint = backendApiUrl 
-    ? `${backendApiUrl}/api/stream?url=${encodedYtUrl}&format=${formatParam}&quality=${qualityParam}`
-    : `/api/stream?url=${encodedYtUrl}&format=${formatParam}&quality=${qualityParam}`;
+    ? `${backendApiUrl}/api/download/${encodeURIComponent(filename)}?url=${encodedYtUrl}&format=${formatParam}&quality=${qualityParam}`
+    : `/api/download/${encodeURIComponent(filename)}?url=${encodedYtUrl}&format=${formatParam}&quality=${qualityParam}`;
 
   const saveFromUrl = `https://en.savefrom.net/1-youtube-video-downloader-782/?url=${encodedYtUrl}`;
   const keepVidUrl = `https://keepv.id/?url=${encodedYtUrl}`;
@@ -493,9 +497,9 @@ function openDownloadModal(videoId, videoTitle, displayTitle, formatParam, quali
       <div style="background: var(--bg-tertiary); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 1.25rem; margin-block: 1rem; text-align: left;">
         <div style="display: flex; flex-direction: column; gap: 0.75rem;">
           
-          <button type="button" onclick="triggerDirectDownload('${streamEndpoint}', '${displayTitle}')" class="btn-download-action" style="width: 100%; justify-content: center; height: 52px; font-size: 1rem; cursor: pointer; border: none;">
+          <button type="button" onclick="triggerDirectDownload('${streamEndpoint}', '${filename}', '${displayTitle}')" class="btn-download-action" style="width: 100%; justify-content: center; height: 52px; font-size: 1rem; cursor: pointer; border: none;">
             <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            ⚡ Start Direct Download (No Redirect)
+            ⚡ Start Direct Download (${filename})
           </button>
 
           <p style="font-size: 0.775rem; color: var(--text-muted); text-align: center; margin: 0;">

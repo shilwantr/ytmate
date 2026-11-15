@@ -14,7 +14,20 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname)));
+
+// Strict Cache-Control middleware to prevent browsers from caching old JS/HTML
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
+
+app.use(express.static(path.join(__dirname), {
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  }
+}));
 
 function parseYouTubeId(url) {
   if (!url) return null;
@@ -31,7 +44,7 @@ app.get('/api/status', (req, res) => {
   res.json({
     status: 'online',
     service: 'YTmate Direct Streaming Engine',
-    version: '3.0.0',
+    version: '3.2.0',
     directDownload: true,
     noRedirect: true,
     ffmpeg: !!ffmpegPath,
@@ -73,8 +86,8 @@ app.get('/api/info', async (req, res) => {
   });
 });
 
-// 100% DIRECT DOWNLOAD STREAMING (NO REDIRECT, NO ADS, NO EXTERNAL POPUPS)
-app.get('/api/stream', async (req, res) => {
+// Core Media Stream Handler
+async function handleStreamDownload(req, res) {
   const { url, format = 'mp4', quality = '1080' } = req.query;
   const videoId = parseYouTubeId(url);
 
@@ -90,9 +103,8 @@ app.get('/api/stream', async (req, res) => {
   let contentType = 'video/mp4';
 
   if (isAudio) {
-    formatSelector = 'ba[ext=m4a]/ba/best';
-    ext = 'm4a';
-    contentType = 'audio/mp4';
+    ext = 'mp3';
+    contentType = 'audio/mpeg';
   } else if (quality === '720') {
     formatSelector = '22/18/b[height<=720]/b';
   } else if (quality === '480') {
@@ -100,29 +112,38 @@ app.get('/api/stream', async (req, res) => {
   } else if (quality === '360') {
     formatSelector = '18/b[height<=360]/b';
   } else if (quality === '1080' || quality === '4k' || quality === '8k') {
-    formatSelector = 'b/bv*+ba/b/18';
+    formatSelector = '18/b/bv*+ba/b';
   }
 
-  // Generate safe filename for user's download
-  let safeTitle = `ytmate_${videoId}`;
-  try {
-    const metaRes = await fetch(`https://noembed.com/embed?url=${youtubeUrl}`);
-    if (metaRes.ok) {
-      const data = await metaRes.json();
-      if (data.title) {
-        safeTitle = data.title.replace(/[^\w\s\-]/gi, '').trim().replace(/\s+/g, '_').substring(0, 60);
+  // Requested custom filename or fallback
+  let requestedFilename = req.params.filename;
+  if (!requestedFilename) {
+    let safeTitle = `ytmate_${videoId}`;
+    try {
+      const metaRes = await fetch(`https://noembed.com/embed?url=${youtubeUrl}`);
+      if (metaRes.ok) {
+        const data = await metaRes.json();
+        if (data.title) {
+          safeTitle = data.title.replace(/[^\w\s\-]/gi, '').trim().replace(/\s+/g, '_').substring(0, 60);
+        }
       }
+    } catch (e) {
+      // ignore
     }
-  } catch (e) {
-    // ignore
+    requestedFilename = `${safeTitle}.${ext}`;
   }
 
-  const filename = `${safeTitle}.${ext}`;
+  // Ensure file extension matches format
+  if (isAudio && !requestedFilename.endsWith('.mp3') && !requestedFilename.endsWith('.m4a')) {
+    requestedFilename += '.mp3';
+  } else if (!isAudio && !requestedFilename.endsWith('.mp4') && !requestedFilename.endsWith('.webm')) {
+    requestedFilename += '.mp4';
+  }
 
-  // Direct Attachment Header forces browser download without navigating away
-  res.setHeader('Content-Disposition', `attachment; filename="${filename}"; filename*=UTF-8''${encodeURIComponent(filename)}`);
+  // Explicit headers for forced native video/audio download
+  res.setHeader('Content-Disposition', `attachment; filename="${requestedFilename}"; filename*=UTF-8''${encodeURIComponent(requestedFilename)}`);
   res.setHeader('Content-Type', contentType);
-  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
 
   const args = [
     '-m', 'yt_dlp',
@@ -136,9 +157,14 @@ app.get('/api/stream', async (req, res) => {
     args.push('--ffmpeg-location', ffmpegPath);
   }
 
-  args.push('-f', formatSelector, '-o', '-', youtubeUrl);
+  if (isAudio) {
+    // Extract real MP3 using static FFmpeg
+    args.push('-x', '--audio-format', 'mp3', '-o', '-', youtubeUrl);
+  } else {
+    args.push('-f', formatSelector, '-o', '-', youtubeUrl);
+  }
 
-  console.log(`[Stream] Starting direct download for ${videoId} (${format}, ${quality})...`);
+  console.log(`[Stream] Direct stream started for ${videoId} (${requestedFilename})...`);
   const proc = spawn('python', args);
 
   proc.stdout.pipe(res);
@@ -148,7 +174,7 @@ app.get('/api/stream', async (req, res) => {
   });
 
   proc.on('close', (code) => {
-    console.log(`[Stream] Direct stream finished for ${videoId} with code ${code}`);
+    console.log(`[Stream] Direct stream finished for ${videoId} (${requestedFilename}) with code ${code}`);
   });
 
   proc.on('error', (err) => {
@@ -159,10 +185,15 @@ app.get('/api/stream', async (req, res) => {
   });
 
   req.on('close', () => {
-    // If user aborts / closes tab, kill python process
     proc.kill();
   });
-});
+}
+
+// 100% DIRECT DOWNLOAD STREAMING ROUTES
+app.get('/api/stream', handleStreamDownload);
+app.get('/api/stream/:filename', handleStreamDownload);
+app.get('/api/download', handleStreamDownload);
+app.get('/api/download/:filename', handleStreamDownload);
 
 // Start Server
 app.listen(PORT, () => {

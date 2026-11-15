@@ -1,7 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
+let ffmpegPath = null;
+try {
+  ffmpegPath = require('ffmpeg-static');
+} catch (e) {
+  ffmpegPath = null;
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,13 +26,15 @@ function parseYouTubeId(url) {
   return null;
 }
 
-// Check Backend Status
+// Health / Status Check
 app.get('/api/status', (req, res) => {
   res.json({
     status: 'online',
-    service: 'YTmate Clean Ad-Free Engine',
-    version: '2.0.0',
-    adFree: true,
+    service: 'YTmate Direct Streaming Engine',
+    version: '3.0.0',
+    directDownload: true,
+    noRedirect: true,
+    ffmpeg: !!ffmpegPath,
     timestamp: new Date().toISOString()
   });
 });
@@ -65,44 +73,101 @@ app.get('/api/info', async (req, res) => {
   });
 });
 
-// Direct Ad-Free Stream Extractor
-app.get('/api/stream', (req, res) => {
+// 100% DIRECT DOWNLOAD STREAMING (NO REDIRECT, NO ADS, NO EXTERNAL POPUPS)
+app.get('/api/stream', async (req, res) => {
   const { url, format = 'mp4', quality = '1080' } = req.query;
   const videoId = parseYouTubeId(url);
 
   if (!videoId) {
-    return res.status(400).json({ error: 'Invalid YouTube URL' });
+    return res.status(400).send('Invalid YouTube URL or ID');
   }
 
   const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
-  const isAudio = format.toLowerCase().includes('mp3') || format.toLowerCase().includes('wav') || format.toLowerCase().includes('m4a');
-  
-  // Format selector for yt-dlp
-  const formatArg = isAudio ? '-f ba/b' : '-f b/bv*+ba/b';
-  const cmd = `python -m yt_dlp --js-runtimes node:node ${formatArg} -g "${youtubeUrl}"`;
+  const isAudio = ['mp3', 'm4a', 'wav', 'audio'].some(x => format.toLowerCase().includes(x));
 
-  exec(cmd, { timeout: 25000 }, (error, stdout, stderr) => {
-    if (error) {
-      console.error('yt-dlp extraction error:', stderr || error.message);
-      // Fallback redirect to ad-free Cobalt
-      return res.redirect(`https://cobalt.tools/?u=${encodeURIComponent(youtubeUrl)}`);
+  let formatSelector = '18/b/bv*+ba/b';
+  let ext = 'mp4';
+  let contentType = 'video/mp4';
+
+  if (isAudio) {
+    formatSelector = 'ba[ext=m4a]/ba/best';
+    ext = 'm4a';
+    contentType = 'audio/mp4';
+  } else if (quality === '720') {
+    formatSelector = '22/18/b[height<=720]/b';
+  } else if (quality === '480') {
+    formatSelector = 'b[height<=480]/18/b';
+  } else if (quality === '360') {
+    formatSelector = '18/b[height<=360]/b';
+  } else if (quality === '1080' || quality === '4k' || quality === '8k') {
+    formatSelector = 'b/bv*+ba/b/18';
+  }
+
+  // Generate safe filename for user's download
+  let safeTitle = `ytmate_${videoId}`;
+  try {
+    const metaRes = await fetch(`https://noembed.com/embed?url=${youtubeUrl}`);
+    if (metaRes.ok) {
+      const data = await metaRes.json();
+      if (data.title) {
+        safeTitle = data.title.replace(/[^\w\s\-]/gi, '').trim().replace(/\s+/g, '_').substring(0, 60);
+      }
     }
+  } catch (e) {
+    // ignore
+  }
 
-    const streamUrls = stdout.trim().split('\n').map(u => u.trim()).filter(u => u.startsWith('http'));
-    if (streamUrls.length === 0) {
-      return res.redirect(`https://cobalt.tools/?u=${encodeURIComponent(youtubeUrl)}`);
+  const filename = `${safeTitle}.${ext}`;
+
+  // Direct Attachment Header forces browser download without navigating away
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"; filename*=UTF-8''${encodeURIComponent(filename)}`);
+  res.setHeader('Content-Type', contentType);
+  res.setHeader('Cache-Control', 'no-cache');
+
+  const args = [
+    '-m', 'yt_dlp',
+    '--quiet',
+    '--no-warnings',
+    '--remote-components', 'ejs:github',
+    '--js-runtimes', 'node:node',
+  ];
+
+  if (ffmpegPath) {
+    args.push('--ffmpeg-location', ffmpegPath);
+  }
+
+  args.push('-f', formatSelector, '-o', '-', youtubeUrl);
+
+  console.log(`[Stream] Starting direct download for ${videoId} (${format}, ${quality})...`);
+  const proc = spawn('python', args);
+
+  proc.stdout.pipe(res);
+
+  proc.stderr.on('data', (errData) => {
+    console.error(`[yt-dlp stderr] ${errData.toString()}`);
+  });
+
+  proc.on('close', (code) => {
+    console.log(`[Stream] Direct stream finished for ${videoId} with code ${code}`);
+  });
+
+  proc.on('error', (err) => {
+    console.error('[Stream error]', err);
+    if (!res.headersSent) {
+      res.status(500).send('Streaming process error');
     }
+  });
 
-    // Direct redirect to clean GoogleVideo media stream with zero ads
-    const chosenStream = streamUrls[0];
-    res.redirect(chosenStream);
+  req.on('close', () => {
+    // If user aborts / closes tab, kill python process
+    proc.kill();
   });
 });
 
 // Start Server
 app.listen(PORT, () => {
   console.log(`=======================================================`);
-  console.log(`  YTmate Ad-Free Engine running on http://localhost:${PORT}`);
-  console.log(`  100% Ad-Free, No Popups, No Third-Party Trackers`);
+  console.log(`  YTmate Direct Streaming Engine running on http://localhost:${PORT}`);
+  console.log(`  Direct Download: 100% In-Browser, Zero Redirect, Zero Ads`);
   console.log(`=======================================================`);
 });

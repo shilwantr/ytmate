@@ -1,0 +1,13 @@
+# Render Blueprint for 1-Click Deployment of YTmate Backend
+services:
+  - type: web
+    name: ytmate-backend
+    env: node
+    plan: free
+    buildCommand: npm install && pip install yt-dlp
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000

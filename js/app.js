@@ -267,18 +267,45 @@ async function handleVideoAnalysis(rawUrl) {
     author: 'YouTube Creator',
     thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
     duration: 'Full Quality Available',
-    url: `https://www.youtube.com/watch?v=${videoId}`
+    url: `https://www.youtube.com/watch?v=${videoId}`,
+    jobId: null
   };
 
   try {
-    const res = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
-    if (res.ok) {
-      const data = await res.json();
-      if (data.title) videoData.title = data.title;
-      if (data.author_name) videoData.author = data.author_name;
+    const analyzeEndpoint = (backendApiUrl || '') + '/api/analyze';
+    const analyzeRes = await fetch(analyzeEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: rawUrl }),
+      signal: AbortSignal.timeout(8000)
+    });
+
+    if (analyzeRes.ok) {
+      const aData = await analyzeRes.json();
+      if (aData.title) videoData.title = aData.title;
+      if (aData.uploader) videoData.author = aData.uploader;
+      if (aData.thumbnail) videoData.thumbnail = aData.thumbnail;
+      if (aData.duration) {
+        const m = Math.floor(aData.duration / 60);
+        const s = aData.duration % 60;
+        videoData.duration = `${m}m ${s < 10 ? '0' : ''}${s}s`;
+      }
+      if (aData.jobId) videoData.jobId = aData.jobId;
+      if (aData.formats) videoData.formats = aData.formats;
+    } else {
+      throw new Error('Analyze endpoint skipped');
     }
   } catch (err) {
-    console.warn('Metadata lookup note:', err);
+    try {
+      const res = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.title) videoData.title = data.title;
+        if (data.author_name) videoData.author = data.author_name;
+      }
+    } catch (e) {
+      console.warn('Metadata lookup note:', e);
+    }
   } finally {
     currentVideoData = videoData;
     renderVideoResult(videoData);
@@ -435,17 +462,110 @@ function executeDownload(format, quality) {
   const safeName = (vTitle || 'video').replace(/[^\w\s\-]/gi, '').trim().replace(/\s+/g, '_') || `youtube_${vId}`;
   const filename = `${safeName}.${fileExt}`;
 
-  // If backend is active, trigger direct download immediately with NO REDIRECT
+  // If local backend is active, trigger direct stream immediately with NO REDIRECT
   if (hasLocalBackend) {
     const streamEndpoint = backendApiUrl 
       ? `${backendApiUrl}/api/download/${encodeURIComponent(filename)}?url=${encodeURIComponent(ytUrl)}&format=${formatParam}&quality=${qualityParam}`
       : `/api/download/${encodeURIComponent(filename)}?url=${encodeURIComponent(ytUrl)}&format=${formatParam}&quality=${qualityParam}`;
 
     triggerDirectDownload(streamEndpoint, filename, displayTitle);
+  } else if (currentVideoData && currentVideoData.jobId && !currentVideoData.jobId.startsWith('local-')) {
+    // If worker job ID is available (Vercel + Worker architecture), run worker job
+    const reqType = formatParam === 'mp3' ? 'audio' : 'video';
+    const bitrate = formatParam === 'mp3' ? 320 : null;
+    startWorkerJobDownload(currentVideoData.jobId, reqType, qualityParam, bitrate, filename, displayTitle);
   } else {
-    // If backend is not detected, open the modal with options to connect backend or use mirror
+    // If worker is not configured on Vercel, open modal with options and instructions
     openDownloadModal(vId, vTitle, displayTitle, formatParam, qualityParam, filename);
   }
+}
+
+/* ==========================================================================
+   Worker Job Execution & Polling Flow (Vercel Architecture)
+   ========================================================================== */
+async function startWorkerJobDownload(jobId, type, formatId, bitrate, filename, displayTitle) {
+  let overlay = document.getElementById('modalOverlay');
+  if (!overlay) return;
+
+  overlay.innerHTML = `
+    <div class="modal-card" style="max-width: 500px; text-align: center;">
+      <button type="button" class="modal-close-btn" id="modalCloseBtn" aria-label="Close modal">×</button>
+      <div style="margin-bottom: 1.25rem;">
+        <span class="quality-badge badge-1080p" style="background:#635bff; color:#fff;">MEDIA PROCESSING</span>
+        <h3 style="font-size: 1.25rem; font-weight: 700; margin-top: 0.5rem;" id="jobStageTitle">Preparing Media...</h3>
+        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;" id="jobStageSubtitle">${filename}</p>
+      </div>
+
+      <div style="background: var(--bg-tertiary); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 1.5rem; margin-bottom: 1rem;">
+        <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
+          <svg class="spin-icon" width="36" height="36" fill="none" stroke="#635bff" stroke-width="2.5" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+            <path d="M12 2a10 10 0 0 1 10 10"></path>
+          </svg>
+        </div>
+        <p style="font-size: 0.9rem; font-weight: 600;" id="jobStageText">Starting media conversion on worker service...</p>
+        <p style="font-size: 0.775rem; color: var(--text-muted); margin-top: 0.5rem;">
+          Worker is processing video and audio with FFmpeg. Zero redirects, zero popups.
+        </p>
+      </div>
+    </div>
+  `;
+  overlay.classList.add('active');
+
+  const closeBtn = document.getElementById('modalCloseBtn');
+  if (closeBtn) closeBtn.onclick = () => overlay.classList.remove('active');
+
+  try {
+    const res = await fetch('/api/download', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jobId, type, formatId, audioBitrate: bitrate || 192 })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to start download job');
+
+    const stageText = document.getElementById('jobStageText');
+    const stageTitle = document.getElementById('jobStageTitle');
+
+    let pollCount = 0;
+    const pollInterval = setInterval(async () => {
+      pollCount++;
+      if (pollCount > 60) {
+        clearInterval(pollInterval);
+        if (stageText) stageText.textContent = 'Processing timeout. Please try again.';
+        return;
+      }
+
+      try {
+        const pollRes = await fetch(`/api/jobs/${encodeURIComponent(jobId)}`);
+        if (!pollRes.ok) return;
+        const job = await pollRes.json();
+
+        if (stageText && job.stage) stageText.textContent = job.stage;
+
+        if (job.status === 'ready') {
+          clearInterval(pollInterval);
+          if (stageTitle) stageTitle.textContent = 'Ready! Downloading...';
+          if (stageText) stageText.textContent = 'Processing completed. Saving file to your device.';
+          
+          triggerDirectDownload(job.downloadUrl || `/api/jobs/${encodeURIComponent(jobId)}/download`, filename, displayTitle);
+          setTimeout(() => overlay.classList.remove('active'), 2500);
+        } else if (job.status === 'failed') {
+          clearInterval(pollInterval);
+          if (stageTitle) stageTitle.textContent = 'Processing Failed';
+          if (stageText) stageText.textContent = job.error || 'An error occurred during media conversion.';
+        }
+      } catch (e) {
+        // ignore
+      }
+    }, 1500);
+
+  } catch (err) {
+    const stageText = document.getElementById('jobStageText');
+    if (stageText) stageText.textContent = err.message;
+    showToast(err.message, 'error');
+  }
+}
 }
 
 /* ==========================================================================

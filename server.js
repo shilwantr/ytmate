@@ -39,6 +39,17 @@ function parseYouTubeId(url) {
   return null;
 }
 
+// Mount Vercel Gateway handlers for local testing
+const analyzeHandler = require('./api/analyze.js');
+const downloadHandler = require('./api/download.js');
+const jobHandler = require('./api/jobs/[id].js');
+const jobDownloadHandler = require('./api/jobs/[id]/download.js');
+
+app.post('/api/analyze', (req, res) => analyzeHandler(req, res));
+app.post('/api/download', (req, res) => downloadHandler(req, res));
+app.get('/api/jobs/:id', (req, res) => jobHandler(req, res));
+app.get('/api/jobs/:id/download', (req, res) => jobDownloadHandler(req, res));
+
 // Health / Status Check
 app.get('/api/status', (req, res) => {
   res.json({

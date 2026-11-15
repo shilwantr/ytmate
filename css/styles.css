@@ -516,7 +516,7 @@ button {
 
 .result-container {
   display: none;
-  max-width: 860px;
+  max-width: 880px;
   margin-inline: auto;
   margin-top: 2rem;
   background: var(--bg-secondary);
@@ -537,7 +537,7 @@ button {
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 1.5rem;
-  margin-block-end: 1.75rem;
+  margin-block-end: 1.5rem;
   align-items: center;
 }
 
@@ -587,6 +587,36 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
+}
+
+/* Live Converter Widget Box */
+.live-widget-box {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-block: 1.25rem;
+  text-align: center;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.widget-badge-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent-red);
+  margin-block-end: 0.75rem;
+}
+.live-widget-iframe-container {
+  width: 100%;
+  min-height: 75px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: transparent;
 }
 
 /* Quality Matrix Tabs */
@@ -684,13 +714,13 @@ button {
   border-color: var(--accent-red);
 }
 
-/* Progress Simulation Modal */
+/* Download Action Modal */
 .modal-overlay {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
   z-index: 1000;
   align-items: center;
   justify-content: center;
@@ -705,31 +735,73 @@ button {
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
   padding: 2rem;
-  max-width: 480px;
+  max-width: 560px;
   width: 100%;
   text-align: center;
   box-shadow: var(--shadow-lg);
   animation: scaleIn 0.2s ease-out;
+  position: relative;
 }
 @keyframes scaleIn {
   from { transform: scale(0.95); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 
-.progress-bar-container {
-  width: 100%;
-  height: 12px;
-  background: var(--bg-tertiary);
+.modal-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 34px;
+  height: 34px;
   border-radius: var(--radius-full);
-  margin-block: 1.5rem 0.75rem;
-  overflow: hidden;
+  background: var(--border-subtle);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all var(--transition-fast);
 }
-.progress-bar-fill {
-  height: 100%;
-  width: 0%;
-  background: var(--accent-gradient);
-  border-radius: var(--radius-full);
-  transition: width 0.2s linear;
+.modal-close-btn:hover {
+  background: var(--accent-red);
+  color: #fff;
+}
+
+.modal-server-widget {
+  width: 100%;
+  height: 70px;
+  border: none;
+  margin-block: 1rem;
+  border-radius: var(--radius-sm);
+  background: transparent;
+}
+
+.modal-mirror-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.mirror-btn {
+  padding: 0.65rem 0.85rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+.mirror-btn:hover {
+  background: var(--border-strong);
+  border-color: var(--accent-red);
+  color: var(--accent-red);
 }
 
 /* ==========================================================================
@@ -1149,6 +1221,9 @@ button {
     grid-template-columns: 1fr 1fr;
   }
   .video-overview {
+    grid-template-columns: 1fr;
+  }
+  .modal-mirror-grid {
     grid-template-columns: 1fr;
   }
 }

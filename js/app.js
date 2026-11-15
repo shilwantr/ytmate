@@ -1,7 +1,10 @@
 /**
- * YTMATE.ONLINE - Interactive Client-Side Engine
- * Fast YouTube Metadata Parser, Format Selector & Simulated Stream Handler
+ * YTMATE.ONLINE - High-Performance Client Engine
+ * Live YouTube Metadata Parser, In-Page Downloader Widget & Multi-Gateway Media Streamer
  */
+
+let currentVideoId = null;
+let currentVideoData = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
@@ -9,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initDownloader();
   initTabs();
   initFaqAccordion();
+  initModalListeners();
 });
 
 /* ==========================================================================
@@ -41,6 +45,15 @@ function setTheme(theme) {
       ? `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>`
       : `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
   }
+
+  // Update embedded widget theme if present
+  const widgetFrame = document.getElementById('dlWidgetFrame');
+  if (widgetFrame && currentVideoId) {
+    const isMp3Page = window.location.pathname.includes('mp3');
+    const isMp4Page = window.location.pathname.includes('mp4');
+    const widgetType = isMp3Page ? 'single-button/mp3' : (isMp4Page ? 'single-button/mp4' : 'multi-button');
+    widgetFrame.src = `https://bestapi.cc/widget/${widgetType}/${currentVideoId}/${theme}`;
+  }
 }
 
 /* ==========================================================================
@@ -57,7 +70,6 @@ function initMobileMenu() {
       navMenu.classList.toggle('active');
     });
 
-    // Close on link click
     navMenu.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
         navMenu.classList.remove('active');
@@ -68,28 +80,31 @@ function initMobileMenu() {
 }
 
 /* ==========================================================================
-   YouTube URL Parser & Downloader Logic
+   YouTube URL Parser
    ========================================================================== */
 function parseYouTubeId(url) {
   if (!url) return null;
   const cleanUrl = url.trim();
 
-  // Standard patterns: watch?v=, youtu.be/, shorts/, embed/, music.youtube.com
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|shorts\/|watch\?v=|&v=)([^#&?]*).*/;
+  // Comprehensive regex covering standard watch URLs, short URLs, embeds, Shorts, Music
+  const regExp = /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|shorts\/|watch\?v=|watch\?.+&v=))([\w-]{11})/;
   const match = cleanUrl.match(regExp);
 
-  if (match && match[2].length === 11) {
-    return match[2];
+  if (match && match[1]) {
+    return match[1];
   }
 
   // Raw 11-char ID check
-  if (/^[a-zA-Z0-9_-]{11}$/.test(cleanUrl)) {
+  if (/^[\w-]{11}$/.test(cleanUrl)) {
     return cleanUrl;
   }
 
   return null;
 }
 
+/* ==========================================================================
+   Downloader Engine Initialization
+   ========================================================================== */
 function initDownloader() {
   const form = document.getElementById('downloaderForm');
   const input = document.getElementById('videoUrlInput');
@@ -101,7 +116,6 @@ function initDownloader() {
 
   if (!input) return;
 
-  // Toggle clear button
   input.addEventListener('input', () => {
     if (btnClear) {
       btnClear.style.display = input.value.trim() ? 'block' : 'none';
@@ -111,18 +125,17 @@ function initDownloader() {
     }
   });
 
-  // Clear button click
   if (btnClear) {
     btnClear.addEventListener('click', () => {
       input.value = '';
       btnClear.style.display = 'none';
       if (resultCard) resultCard.style.display = 'none';
       if (statusMsg) statusMsg.style.display = 'none';
+      currentVideoId = null;
       input.focus();
     });
   }
 
-  // Paste button click
   if (btnPaste) {
     btnPaste.addEventListener('click', async () => {
       try {
@@ -134,13 +147,12 @@ function initDownloader() {
           handleVideoAnalysis(text);
         }
       } catch (err) {
-        showToast('Clipboard access denied. Please paste manually.', 'error');
+        showToast('Clipboard permission denied. Please paste manually.', 'error');
         input.focus();
       }
     });
   }
 
-  // Sample quick links
   samplePills.forEach(pill => {
     pill.addEventListener('click', () => {
       const url = pill.getAttribute('data-url');
@@ -152,7 +164,6 @@ function initDownloader() {
     });
   });
 
-  // Form submission
   if (form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -160,21 +171,22 @@ function initDownloader() {
     });
   }
 
-  // Setup simulated download buttons
+  // Handle table download buttons
   document.addEventListener('click', (e) => {
     const downloadBtn = e.target.closest('.btn-table-download');
     if (downloadBtn) {
       e.preventDefault();
-      const format = downloadBtn.getAttribute('data-format') || 'MP4';
+      const format = downloadBtn.getAttribute('data-format') || 'mp4';
       const quality = downloadBtn.getAttribute('data-quality') || '1080p';
-      const filename = downloadBtn.getAttribute('data-filename') || `ytmate_${quality}.${format.toLowerCase()}`;
-      startDownloadFlow(format, quality, filename);
+      executeDownload(format, quality);
     }
   });
 }
 
+/* ==========================================================================
+   Video Analysis & Metadata Fetching
+   ========================================================================== */
 async function handleVideoAnalysis(rawUrl) {
-  const input = document.getElementById('videoUrlInput');
   const statusMsg = document.getElementById('statusMessage');
   const resultCard = document.getElementById('resultContainer');
   const submitBtn = document.querySelector('.btn-download-action');
@@ -182,39 +194,41 @@ async function handleVideoAnalysis(rawUrl) {
   const videoId = parseYouTubeId(rawUrl);
 
   if (!videoId) {
-    showStatus('Please enter a valid YouTube video URL or ID (e.g., https://youtu.be/... or https://youtube.com/watch?v=...)', 'error');
+    showStatus('Please enter a valid YouTube video URL (e.g. https://www.youtube.com/watch?v=... or https://youtu.be/...)', 'error');
     if (resultCard) resultCard.style.display = 'none';
     return;
   }
 
-  // Show loading state
+  currentVideoId = videoId;
+
   if (submitBtn) {
     submitBtn.disabled = true;
-    submitBtn.innerHTML = `<svg class="spin-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg> Analyzing...`;
+    submitBtn.innerHTML = `<svg class="spin-icon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path></svg> Fetching...`;
   }
 
   let videoData = {
     id: videoId,
-    title: 'YouTube Video (' + videoId + ')',
+    title: `YouTube Video (${videoId})`,
     author: 'YouTube Creator',
     thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-    duration: '04:18',
-    views: '1.4M views'
+    duration: 'HD Quality Available',
+    url: `https://www.youtube.com/watch?v=${videoId}`
   };
 
   try {
-    // Attempt to query official public oEmbed (no API key required)
-    const oEmbedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
-    const res = await fetch(oEmbedUrl);
+    // Query noembed which provides CORS-friendly public JSON
+    const res = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
     if (res.ok) {
       const data = await res.json();
-      videoData.title = data.title || videoData.title;
-      videoData.author = data.author_name || videoData.author;
+      if (data.title) videoData.title = data.title;
+      if (data.author_name) videoData.author = data.author_name;
     }
   } catch (err) {
-    console.log('Direct oEmbed lookup skipped or restricted by CORS, applying high-fidelity metadata fallback.', err);
+    console.warn('Metadata lookup note:', err);
   } finally {
+    currentVideoData = videoData;
     renderVideoResult(videoData);
+
     if (submitBtn) {
       submitBtn.disabled = false;
       submitBtn.innerHTML = `<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Download Now`;
@@ -222,11 +236,13 @@ async function handleVideoAnalysis(rawUrl) {
   }
 }
 
+/* ==========================================================================
+   Render Results & Embed Real Conversion Widget
+   ========================================================================== */
 function renderVideoResult(data) {
   const resultCard = document.getElementById('resultContainer');
   if (!resultCard) return;
 
-  // Populate info
   const titleEl = document.getElementById('resTitle');
   const authorEl = document.getElementById('resAuthor');
   const thumbEl = document.getElementById('resThumb');
@@ -242,19 +258,215 @@ function renderVideoResult(data) {
     };
   }
 
-  // Update download button data attributes
-  document.querySelectorAll('.btn-table-download').forEach(btn => {
-    const format = btn.getAttribute('data-format') || 'mp4';
-    const quality = btn.getAttribute('data-quality') || '1080p';
-    const safeTitle = data.title.replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 40);
-    btn.setAttribute('data-filename', `${safeTitle}_${quality}.${format.toLowerCase()}`);
-  });
+  // Inject or update in-page direct downloader widget
+  let liveWidgetBox = document.getElementById('liveWidgetBox');
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  const isMp3Page = window.location.pathname.includes('mp3');
+  const isMp4Page = window.location.pathname.includes('mp4');
+  const widgetType = isMp3Page ? 'single-button/mp3' : (isMp4Page ? 'single-button/mp4' : 'multi-button');
+  const widgetUrl = `https://bestapi.cc/widget/${widgetType}/${data.id}/${currentTheme}`;
+
+  if (!liveWidgetBox) {
+    liveWidgetBox = document.createElement('div');
+    liveWidgetBox.id = 'liveWidgetBox';
+    liveWidgetBox.className = 'live-widget-box';
+    
+    // Insert before format tabs
+    const formatTabs = resultCard.querySelector('.format-tabs');
+    if (formatTabs) {
+      resultCard.insertBefore(liveWidgetBox, formatTabs);
+    } else {
+      resultCard.appendChild(liveWidgetBox);
+    }
+  }
+
+  liveWidgetBox.innerHTML = `
+    <div class="widget-badge-label">
+      <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Direct 1-Click Stream Downloader
+    </div>
+    <div class="live-widget-iframe-container">
+      <iframe id="dlWidgetFrame" 
+              src="${widgetUrl}" 
+              width="100%" 
+              height="75px" 
+              allowtransparency="true" 
+              scrolling="no" 
+              style="border:none;">
+      </iframe>
+    </div>
+  `;
 
   resultCard.style.display = 'block';
   resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  showToast('Video processed successfully! Choose your resolution or MP3 audio below.', 'success');
+  showToast('Video ready! Use the direct download bar or choose a specific resolution below.', 'success');
 }
 
+/* ==========================================================================
+   Real Execution of Downloads & Stream Converters
+   ========================================================================== */
+function executeDownload(format, quality) {
+  if (!currentVideoId) {
+    showToast('Please analyze a YouTube video first.', 'error');
+    return;
+  }
+
+  const vId = currentVideoId;
+  const vTitle = currentVideoData ? currentVideoData.title : `YouTube_${vId}`;
+
+  // 1. Handle Thumbnail Image Downloads
+  if (format === 'jpg') {
+    let imgUrl = `https://img.youtube.com/vi/${vId}/maxresdefault.jpg`;
+    if (quality.includes('SD')) imgUrl = `https://img.youtube.com/vi/${vId}/sddefault.jpg`;
+    if (quality.includes('HQ')) imgUrl = `https://img.youtube.com/vi/${vId}/hqdefault.jpg`;
+    if (quality.includes('MQ')) imgUrl = `https://img.youtube.com/vi/${vId}/mqdefault.jpg`;
+
+    // Direct download trigger
+    const a = document.createElement('a');
+    a.href = imgUrl;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.download = `${vTitle}_${quality}.jpg`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast(`Opening high-res image: ${quality}`, 'success');
+    return;
+  }
+
+  // 2. Handle Subtitles
+  if (['srt', 'vtt', 'txt'].includes(format.toLowerCase())) {
+    const subUrl = `https://downsub.com/?url=https://www.youtube.com/watch?v=${vId}`;
+    window.open(subUrl, '_blank', 'noopener,noreferrer');
+    showToast(`Opening subtitle extractor for ${format.toUpperCase()}...`, 'info');
+    return;
+  }
+
+  // 3. Handle Audio & Video Formats
+  let formatParam = 'mp4';
+  let displayTitle = 'Download Video';
+
+  if (format.toLowerCase() === 'mp3') {
+    formatParam = 'mp3';
+    displayTitle = `Convert to MP3 Audio (${quality})`;
+  } else if (format.toLowerCase() === 'wav') {
+    formatParam = 'wav';
+    displayTitle = 'Extract Lossless WAV Audio';
+  } else if (format.toLowerCase() === 'm4a') {
+    formatParam = 'm4a';
+    displayTitle = 'Extract Apple M4A Audio';
+  } else if (quality.includes('4k') || quality.includes('4K') || quality.includes('2160')) {
+    formatParam = '4k';
+    displayTitle = 'Download 4K Ultra HD Video';
+  } else if (quality.includes('8k') || quality.includes('8K') || quality.includes('4320')) {
+    formatParam = '8k';
+    displayTitle = 'Download 8K Ultra HD Video';
+  } else if (quality.includes('1080')) {
+    formatParam = '1080';
+    displayTitle = 'Download 1080p Full HD Video';
+  } else if (quality.includes('720')) {
+    formatParam = '720';
+    displayTitle = 'Download 720p HD Video';
+  } else if (quality.includes('480')) {
+    formatParam = '480';
+    displayTitle = 'Download 480p Video';
+  } else if (quality.includes('360')) {
+    formatParam = '360';
+    displayTitle = 'Download 360p Video';
+  } else if (quality.includes('Shorts')) {
+    formatParam = '1080';
+    displayTitle = 'Download YouTube Short in HD';
+  }
+
+  openDownloadModal(vId, vTitle, displayTitle, formatParam);
+}
+
+/* ==========================================================================
+   Download Modal Management with Real Working Streams & Alternative Mirrors
+   ========================================================================== */
+function openDownloadModal(videoId, videoTitle, displayTitle, formatParam) {
+  let overlay = document.getElementById('modalOverlay');
+  if (!overlay) return;
+
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  const saveNowUrl = `https://p.savenow.to/api/button/?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D${videoId}&f=${formatParam}`;
+  const y2metaUrl = `https://y2meta.tube/en/?url=https://www.youtube.com/watch?v=${videoId}`;
+  const tenDownloaderUrl = `https://10downloader.com/download?v=${videoId}`;
+  const ssYoutubeUrl = `https://ssyoutube.com/watch?v=${videoId}`;
+  const cobaltUrl = `https://cobalt.tools/`;
+  const directLoaderUrl = `https://loader.to/api/button/?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3D${videoId}&f=${formatParam}`;
+
+  overlay.innerHTML = `
+    <div class="modal-card" style="max-width: 560px;">
+      <button type="button" class="modal-close-btn" id="modalCloseBtn" aria-label="Close modal">×</button>
+      
+      <div style="margin-block-end: 1rem;">
+        <span class="quality-badge badge-1080p" style="margin-bottom: 0.5rem;">READY TO DOWNLOAD</span>
+        <h3 style="font-size: 1.25rem; font-weight: 700; margin-top: 0.5rem;">${displayTitle}</h3>
+        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 0.25rem;">${videoTitle}</p>
+      </div>
+
+      <!-- Live Stream Conversion Frame -->
+      <div style="background: var(--bg-tertiary); border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 0.75rem; margin-block: 1rem;">
+        <p style="font-size: 0.8rem; font-weight: 600; color: var(--accent-red); margin-bottom: 0.5rem; text-transform: uppercase;">
+          Server 1: High-Speed Instant Converter
+        </p>
+        <iframe src="${saveNowUrl}" class="modal-server-widget" allowtransparency="true" scrolling="no"></iframe>
+      </div>
+
+      <!-- Direct Fallback & Alternative Mirrors -->
+      <div style="margin-top: 1.25rem; text-align: left;">
+        <p style="font-size: 0.825rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">
+          Alternative 1-Click Fast Mirrors:
+        </p>
+        <div class="modal-mirror-grid">
+          <a href="${directLoaderUrl}" target="_blank" rel="noopener noreferrer" class="mirror-btn" style="background: var(--accent-gradient); color: #fff; border: none;">
+            ⚡ Direct Stream Gateway
+          </a>
+          <a href="${tenDownloaderUrl}" target="_blank" rel="noopener noreferrer" class="mirror-btn">
+            🎬 10Downloader Mirror
+          </a>
+          <a href="${y2metaUrl}" target="_blank" rel="noopener noreferrer" class="mirror-btn">
+            🎵 Y2Meta Downloader
+          </a>
+          <a href="${ssYoutubeUrl}" target="_blank" rel="noopener noreferrer" class="mirror-btn">
+            📺 SSYouTube Mirror
+          </a>
+        </div>
+      </div>
+    </div>
+  `;
+
+  overlay.classList.add('active');
+
+  const closeBtn = document.getElementById('modalCloseBtn');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      overlay.classList.remove('active');
+    });
+  }
+}
+
+function initModalListeners() {
+  const overlay = document.getElementById('modalOverlay');
+  if (overlay) {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        overlay.classList.remove('active');
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay.classList.contains('active')) {
+        overlay.classList.remove('active');
+      }
+    });
+  }
+}
+
+/* ==========================================================================
+   Helper Utilities: Toast & Status Messages
+   ========================================================================== */
 function showStatus(msg, type = 'error') {
   const statusMsg = document.getElementById('statusMessage');
   if (statusMsg) {
@@ -264,9 +476,6 @@ function showStatus(msg, type = 'error') {
   }
 }
 
-/* ==========================================================================
-   Tabs Management
-   ========================================================================== */
 function initTabs() {
   const tabBtns = document.querySelectorAll('.tab-btn');
   tabBtns.forEach(btn => {
@@ -284,15 +493,11 @@ function initTabs() {
   });
 }
 
-/* ==========================================================================
-   FAQ Accordions
-   ========================================================================== */
 function initFaqAccordion() {
   const faqItems = document.querySelectorAll('.faq-item');
   faqItems.forEach(item => {
     item.addEventListener('toggle', () => {
       if (item.open) {
-        // Optional: close other open items for accordion effect
         faqItems.forEach(otherItem => {
           if (otherItem !== item && otherItem.open) {
             otherItem.open = false;
@@ -303,77 +508,6 @@ function initFaqAccordion() {
   });
 }
 
-/* ==========================================================================
-   Conversion & Download Stream Simulation Flow
-   ========================================================================== */
-function startDownloadFlow(format, quality, filename) {
-  const overlay = document.getElementById('modalOverlay');
-  const titleEl = document.getElementById('modalTitle');
-  const descEl = document.getElementById('modalDesc');
-  const fillEl = document.getElementById('modalProgressFill');
-  const percentEl = document.getElementById('modalPercent');
-
-  if (!overlay) {
-    triggerFileSave(format, quality, filename);
-    return;
-  }
-
-  overlay.classList.add('active');
-  titleEl.textContent = `Converting & Preparing ${format.toUpperCase()} (${quality})`;
-  descEl.textContent = 'Allocating high-speed streaming buffer...';
-  fillEl.style.width = '0%';
-  percentEl.textContent = '0%';
-
-  let progress = 0;
-  const interval = setInterval(() => {
-    progress += Math.floor(Math.random() * 18) + 12;
-    if (progress > 100) progress = 100;
-
-    fillEl.style.width = `${progress}%`;
-    percentEl.textContent = `${progress}%`;
-
-    if (progress >= 30 && progress < 70) {
-      descEl.textContent = format === 'MP3' 
-        ? 'Extracting lossless audio and encoding 320kbps MP3 ID3 tags...'
-        : `Merging ${quality} video stream with crystal-clear 192k audio...`;
-    } else if (progress >= 70 && progress < 100) {
-      descEl.textContent = 'Finalizing packaging & generating direct download link...';
-    } else if (progress === 100) {
-      clearInterval(interval);
-      descEl.textContent = 'Done! Your download has started.';
-      setTimeout(() => {
-        overlay.classList.remove('active');
-        triggerFileSave(format, quality, filename);
-        showToast(`Downloaded: ${filename}`, 'success');
-      }, 600);
-    }
-  }, 180);
-}
-
-function triggerFileSave(format, quality, filename) {
-  // Generate a mock media text file payload representing the requested resolution/audio stream
-  const content = `YTmate Downloader Stream
-Domain: https://ytmate.online
-Format: ${format.toUpperCase()}
-Quality / Resolution: ${quality}
-File Name: ${filename}
-Status: Completed
-Thank you for using YTmate.online - The fastest YouTube & MP3 Downloader!`;
-
-  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-/* ==========================================================================
-   Toast Notification System
-   ========================================================================== */
 function showToast(message, type = 'info') {
   let container = document.querySelector('.toast-container');
   if (!container) {

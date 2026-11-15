@@ -84,15 +84,24 @@ ytmate/
 
 ---
 
-## 🌐 Deployment Instructions
+## 🌐 Deployment & Running Options
 
-### GitHub Pages (Recommended)
+### 1. Local Server (Full-Stack Mode)
+Run the built-in Node.js server with Express:
+```bash
+npm install
+npm start
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser. Includes `/api/status`, `/api/info`, and `/api/download` API endpoints.
+
+### 2. GitHub Pages (Static Hosting)
 1. Repository includes a `CNAME` pointing to `ytmate.online`.
 2. Go to **Settings** > **Pages** in GitHub.
 3. Under **Branch**, select `main` and root `/`.
 4. Click **Save**. HTTPS is automatically provisioned via Let's Encrypt.
+Client-side stream downloaders and widgets operate seamlessly with zero backend configuration needed.
 
-### Cloudflare Pages / Netlify / Vercel
+### 3. Cloudflare Pages / Netlify / Vercel
 - Simply link this repository with default static build settings (no build command, publish directory: `.`).
 
 ---

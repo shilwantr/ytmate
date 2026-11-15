@@ -566,7 +566,6 @@ async function startWorkerJobDownload(jobId, type, formatId, bitrate, filename, 
     showToast(err.message, 'error');
   }
 }
-}
 
 /* ==========================================================================
    Zero-Redirect Direct Browser Download Trigger

@@ -86,20 +86,25 @@ ytmate/
 
 ## 🌐 Deployment & Running Options
 
-### 1. Local Server (Full-Stack Mode)
-Run the built-in Node.js server with Express:
+### 1. Local Server (100% Direct Download Engine)
+Run the built-in Node.js server with Express, yt-dlp, and static FFmpeg:
 ```bash
 npm install
+python -m pip install yt-dlp
 npm start
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser. Includes `/api/status`, `/api/info`, and `/api/download` API endpoints.
+Open [http://localhost:3000](http://localhost:3000) in your browser. Features 100% direct in-browser download with zero redirects and zero ads.
 
-### 2. GitHub Pages (Static Hosting)
+### 2. 1-Click Free Cloud Deployment (Render / Railway / Docker)
+- **Render**: The repository includes `render.yaml`. Connect your GitHub repo to [Render](https://render.com) for a 1-click free web service deployment.
+- **Docker**: Run `docker build -t ytmate . && docker run -p 3000:3000 ytmate`.
+
+### 3. GitHub Pages (Static Hosting)
 1. Repository includes a `CNAME` pointing to `ytmate.online`.
 2. Go to **Settings** > **Pages** in GitHub.
 3. Under **Branch**, select `main` and root `/`.
 4. Click **Save**. HTTPS is automatically provisioned via Let's Encrypt.
-Client-side stream downloaders and widgets operate seamlessly with zero backend configuration needed.
+Visitors can connect their deployed API backend via **[Settings]** for direct streaming, or use the clean ad-free mirrors.
 
 ### 3. Cloudflare Pages / Netlify / Vercel
 - Simply link this repository with default static build settings (no build command, publish directory: `.`).
